@@ -154,7 +154,7 @@ class HuggingFaceHandler(BaseMLEngine):
         # persist changes to handler folder
         self.engine_storage.folder_sync(model_name)
 
-    # todo move infer tasks to a seperate file
+    # todo move infer tasks to a separate file
     def predict_text_classification(self, pipeline, item, args):
         top_k = args.get("top_k", 1000)
 

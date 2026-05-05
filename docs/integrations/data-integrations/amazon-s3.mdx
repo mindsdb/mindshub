@@ -24,6 +24,7 @@ WITH
     parameters = {
       "aws_access_key_id": "AQAXEQK89OX07YS34OP",
       "aws_secret_access_key": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+      "region_name": "us-east-1",
       "bucket": "my-bucket"
     };
 ```
@@ -40,6 +41,7 @@ Required connection parameters include the following:
 Optional connection parameters include the following:
 
 * `aws_session_token`: The AWS session token that identifies the user or IAM role. This becomes necessary when using temporary security credentials.
+* `region_name`: The AWS region of the bucket (for example, `us-east-1`). When omitted, MindsDB falls back to the bucket's location, which may add an extra metadata round trip and can fail for endpoints that require an explicit region.
 * `bucket`: The name of the Amazon S3 bucket. If not provided, all available buckets can be queried, however, this can affect performance, especially when listing all of the available objects.
 
 ## Usage

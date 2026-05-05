@@ -34,7 +34,7 @@ PARAMETERS = {
 };
 ```
 
-Another option is to use seperate config fields like scheme(protocol), the domain and the port of the instance of the faunadb database:
+Another option is to use separate config fields like scheme(protocol), the domain and the port of the instance of the faunadb database:
 
 ```sql
 CREATE DATABASE fauna_dev

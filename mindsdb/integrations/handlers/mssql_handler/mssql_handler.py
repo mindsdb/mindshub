@@ -435,39 +435,107 @@ class SqlServerHandler(MetaDatabaseHandler):
             resp.error_message += f"\nThe problem with render: {render_error}"
         return resp
 
-    def get_tables(self) -> Response:
+    def get_tables(self, all: bool = False) -> Response:
         """
-        Retrieves a list of all non-system tables and views in the current schema of the Microsoft SQL Server database.
+        Retrieves a list of all non-system tables and views in the Microsoft SQL Server database.
+
+        When a specific schema is configured (``self.schema``), only tables belonging to that
+        schema are returned regardless of the ``all`` flag.  When no schema is configured:
+
+        * ``all=False`` (default, used by ``INFORMATION_SCHEMA.TABLES``) – returns tables from
+          every non-system schema and exposes the real SQL schema name in *table_schema*.
+          ``table_name`` is qualified as ``<schema>.<table>`` so that the three-part name
+          ``<datasource>.<schema>.<table>`` works transparently in MindsDB SQL.
+        * ``all=True`` (used by the Explorer UI / tree endpoint) – same query but
+          ``table_name`` is **not** prefixed; the raw ``table_schema`` column is kept so the
+          UI can group tables under their schema nodes.
+
+        Args:
+            all (bool): When *True* the unqualified ``table_name`` is returned (Explorer mode).
+                        When *False* (default) ``table_name`` is prefixed with the schema so
+                        that ``INFORMATION_SCHEMA.TABLES`` exposes the full three-part table
+                        reference.
 
         Returns:
-            Response: A response object containing the list of tables and views, formatted as per the `Response` class.
+            Response: A response object containing the list of tables and views, formatted as
+                      per the ``Response`` class.
         """
 
+        if self.schema:
+            # Single-schema mode: schema filter is always applied; names are unambiguous.
+            query = f"""
+                SELECT
+                    table_schema,
+                    table_name,
+                    table_type
+                FROM {self.database}.INFORMATION_SCHEMA.TABLES
+                WHERE TABLE_TYPE in ('BASE TABLE', 'VIEW')
+                  AND table_schema = '{self.schema}'
+            """
+            return self.native_query(query)
+
+        if all:
+            # Explorer / tree mode: return raw schema + table columns so the UI can
+            # group tables under their schema nodes.
+            query = f"""
+                SELECT
+                    table_schema,
+                    table_name,
+                    table_type
+                FROM {self.database}.INFORMATION_SCHEMA.TABLES
+                WHERE TABLE_TYPE in ('BASE TABLE', 'VIEW')
+                  AND table_schema NOT IN ('sys', 'INFORMATION_SCHEMA', 'guest', 'db_owner',
+                      'db_accessadmin', 'db_securityadmin', 'db_ddladmin', 'db_backupoperator',
+                      'db_datareader', 'db_datawriter', 'db_denydatareader', 'db_denydatawriter')
+                ORDER BY table_schema, table_name
+            """
+            return self.native_query(query)
+
+        # INFORMATION_SCHEMA.TABLES mode (all=False, no explicit schema): qualify
+        # table_name as "<schema>.<table>" so the datasource-level TABLE_SCHEMA
+        # override in MindsDB's system_tables layer does not hide the real schema.
         query = f"""
             SELECT
                 table_schema,
-                table_name,
+                table_schema + '.' + table_name AS table_name,
                 table_type
             FROM {self.database}.INFORMATION_SCHEMA.TABLES
             WHERE TABLE_TYPE in ('BASE TABLE', 'VIEW')
+              AND table_schema NOT IN ('sys', 'INFORMATION_SCHEMA', 'guest', 'db_owner',
+                  'db_accessadmin', 'db_securityadmin', 'db_ddladmin', 'db_backupoperator',
+                  'db_datareader', 'db_datawriter', 'db_denydatareader', 'db_denydatawriter')
+            ORDER BY table_schema, table_name
         """
-        if self.schema:
-            query += f" AND table_schema = '{self.schema}'"
-
         return self.native_query(query)
 
-    def get_columns(self, table_name) -> Response:
+    def get_columns(self, table_name: str, schema_name: str | None = None) -> Response:
         """
         Retrieves column details for a specified table in the Microsoft SQL Server database.
 
+        ``table_name`` may arrive as a qualified ``<schema>.<table>`` string (produced by
+        :meth:`get_tables` when no explicit schema is configured).  In that case the schema
+        part is extracted automatically and used as the ``table_schema`` filter.
+
         Args:
-            table_name (str): The name of the table for which to retrieve column information.
+            table_name (str): The name of the table, optionally qualified as
+                ``<schema>.<table>``.
+            schema_name (str | None): Explicit schema override.  When provided it takes
+                precedence over any schema embedded in ``table_name`` and over
+                ``self.schema``.
 
         Returns:
-            Response: A response object containing the column details, formatted as per the `Response` class.
+            Response: A response object containing the column details, formatted as per the
+                      ``Response`` class.
         Raises:
             ValueError: If the 'table_name' is not a valid string.
         """
+
+        # Resolve schema: explicit arg > embedded in table_name > handler-level self.schema.
+        effective_schema = schema_name or self.schema
+        if effective_schema is None and "." in table_name:
+            # table_name was qualified by get_tables() as "<schema>.<table>"
+            parts = table_name.split(".", 1)
+            effective_schema, table_name = parts[0], parts[1]
 
         query = f"""
             SELECT
@@ -489,8 +557,8 @@ class SqlServerHandler(MetaDatabaseHandler):
                 table_name = '{table_name}'
         """
 
-        if self.schema:
-            query += f" AND table_schema = '{self.schema}'"
+        if effective_schema:
+            query += f" AND table_schema = '{effective_schema}'"
 
         result = self.native_query(query)
         result.to_columns_table_response(map_type_fn=_map_type)

@@ -182,7 +182,12 @@ class TestMSSQLHandler(BaseDatabaseHandlerTest, unittest.TestCase):
 
     def test_get_tables(self):
         """
-        Tests that get_tables calls native_query with the correct SQL
+        Tests that get_tables calls native_query with the correct SQL.
+
+        Default (all=False, no self.schema): table_name should be qualified as
+        ``<schema>.<table>`` so that the real SQL schema is not lost when
+        MindsDB's information_schema layer overwrites TABLE_SCHEMA with the
+        datasource name.
         """
         expected_response = OkResponse()
         self.handler.native_query = MagicMock(return_value=expected_response)
@@ -197,7 +202,52 @@ class TestMSSQLHandler(BaseDatabaseHandlerTest, unittest.TestCase):
         self.assertIn("table_schema", call_args)
         self.assertIn("table_name", call_args)
         self.assertIn("table_type", call_args)
+        # Qualified name: table_name must be "schema + '.' + table_name"
+        self.assertIn("table_schema + '.' + table_name", call_args)
         self.assertEqual(response, expected_response)
+
+    def test_get_tables_all_mode(self):
+        """
+        Tests that get_tables(all=True) returns raw (unqualified) table_name so
+        the Explorer UI can group tables under their schema nodes.
+        """
+        expected_response = OkResponse()
+        self.handler.native_query = MagicMock(return_value=expected_response)
+
+        response = self.handler.get_tables(all=True)
+
+        self.handler.native_query.assert_called_once()
+        call_args = self.handler.native_query.call_args[0][0]
+        database = self.handler.connection_args["database"]
+
+        self.assertIn(f"{database}.INFORMATION_SCHEMA.TABLES", call_args)
+        self.assertIn("table_schema", call_args)
+        self.assertIn("table_name", call_args)
+        # In explorer mode the name must NOT be qualified
+        self.assertNotIn("table_schema + '.' + table_name", call_args)
+        self.assertEqual(response, expected_response)
+
+    def test_get_tables_with_schema(self):
+        """
+        Tests that get_tables with a configured schema always filters by that
+        schema and returns plain (unqualified) table names.
+        """
+        self.handler.schema = "dbo"
+        expected_response = OkResponse()
+        self.handler.native_query = MagicMock(return_value=expected_response)
+
+        response = self.handler.get_tables()
+
+        self.handler.native_query.assert_called_once()
+        call_args = self.handler.native_query.call_args[0][0]
+
+        self.assertIn("table_schema = 'dbo'", call_args)
+        # Single-schema mode: no schema qualification needed in table_name
+        self.assertNotIn("table_schema + '.' + table_name", call_args)
+        self.assertEqual(response, expected_response)
+
+        # Reset handler schema
+        self.handler.schema = None
 
     def test_get_columns(self):
         """
@@ -233,6 +283,44 @@ class TestMSSQLHandler(BaseDatabaseHandlerTest, unittest.TestCase):
         """
         self.assertEqual(call_args, expected_sql)
         self.assertEqual(response, expected_response)
+
+    def test_get_columns_with_qualified_table_name(self):
+        """
+        Tests that get_columns correctly handles a qualified ``<schema>.<table>`` name
+        produced by get_tables(all=False) when no explicit schema is configured.
+        The schema part is extracted and used as a table_schema filter so the query
+        returns the correct columns.
+        """
+        expected_response = TableResponse(data=DataFrame([], columns=list(INF_SCHEMA_COLUMNS_NAMES_SET)))
+        self.handler.native_query = MagicMock(return_value=expected_response)
+
+        qualified_name = "dbo.Customers"
+        response = self.handler.get_columns(qualified_name)
+
+        assert response.type == RESPONSE_TYPE.COLUMNS_TABLE
+        self.handler.native_query.assert_called_once()
+        call_args = self.handler.native_query.call_args[0][0]
+
+        # The query should filter by the bare table name AND the extracted schema
+        self.assertIn("table_name = 'Customers'", call_args)
+        self.assertIn("table_schema = 'dbo'", call_args)
+
+    def test_get_columns_with_explicit_schema_name(self):
+        """
+        Tests that an explicit schema_name argument takes precedence over any
+        schema embedded in table_name and over self.schema.
+        """
+        expected_response = TableResponse(data=DataFrame([], columns=list(INF_SCHEMA_COLUMNS_NAMES_SET)))
+        self.handler.native_query = MagicMock(return_value=expected_response)
+
+        response = self.handler.get_columns("Orders", schema_name="app")
+
+        assert response.type == RESPONSE_TYPE.COLUMNS_TABLE
+        self.handler.native_query.assert_called_once()
+        call_args = self.handler.native_query.call_args[0][0]
+
+        self.assertIn("table_name = 'Orders'", call_args)
+        self.assertIn("table_schema = 'app'", call_args)
 
     def test_meta_get_tables_returns_response(self):
         # realistic names

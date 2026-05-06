@@ -537,6 +537,10 @@ class SqlServerHandler(MetaDatabaseHandler):
             parts = table_name.split(".", 1)
             effective_schema, table_name = parts[0], parts[1]
 
+        # Escape single-quotes in identifier values used in SQL string literals.
+        safe_table_name = table_name.replace("'", "''")
+        safe_schema = effective_schema.replace("'", "''") if effective_schema else None
+
         query = f"""
             SELECT
                 COLUMN_NAME,
@@ -554,11 +558,11 @@ class SqlServerHandler(MetaDatabaseHandler):
             FROM
                 information_schema.columns
             WHERE
-                table_name = '{table_name}'
+                table_name = '{safe_table_name}'
         """
 
-        if effective_schema:
-            query += f" AND table_schema = '{effective_schema}'"
+        if safe_schema:
+            query += f" AND table_schema = '{safe_schema}'"
 
         result = self.native_query(query)
         result.to_columns_table_response(map_type_fn=_map_type)

@@ -111,7 +111,7 @@ SELECT SUM(ExpectedRevenue) AS open_pipeline
 FROM salesforce.opportunities
 WHERE close_date >= CURDATE()
 
---use the same dialect to retrieve even from a non-SQL database, like MondoDB
+--use the same dialect to retrieve even from a non-SQL database, like MongoDB
 SELECT COUNT(*) AS negative_emails_last_30_days
 FROM mongodb.support_tickets
 WHERE sentiment = 'negative'
@@ -137,14 +137,15 @@ Join vectorized and structured data inside a <a href="https://docs.mindsdb.com/m
 CREATE KNOWLEDGE_BASE customers_issues
 USING
   storage = my_vector.db,
-  content_columns = ['ticket_description'];
+  content_columns = ['ticket_description'],
   metadata_columns = ['customer_name', 'segment', 'revenue', 'is_pending_renewal'];
 
 --find large customers who submitted ticket related to data security topics  
 SELECT * FROM customers_issues
 WHERE content = 'data security'
 AND
-  is_pending_renewal = 'true'.
+  is_pending_renewal = 'true'
+AND
   revenue > 1000000;
 ```
 

@@ -32,7 +32,7 @@ Minds Platform is dedicated to building an open foundation for frontier Artifici
 
 We believe useful AI systems require two fundamental capabilities: the ability to take meaningful actions autonomously **(Action and Execution)** and the ability to retrieve the right information **(Search and Retrieval)**. Our products are designed around these two foundations: 
 
-* [Minds Anton](https://github.com/mindsdb/anton) - **Action and Execution** general purpose AI agent that can get work done. Tell it what you need in plain language and it takes it from there - creating reports, organizing data, sending emails, calling APIs, building dashboards, scheduling tasks, etc. 
+* [Minds Anton](https://github.com/mindsdb/anton) - **Action and Execution** self-improving AI agent that can get any type work done. Tell it what you need in plain language and it takes it from there - creating reports, organizing data, sending emails, calling APIs, building dashboards, scheduling tasks, etc. 
 
 * [Minds Query Engine](https://github.com/mindsdb/engine) - Semantic **Search and Retrieval** query engine, used to index and organize large amounts of data from hundreds of structured and unstructured datasources.
 

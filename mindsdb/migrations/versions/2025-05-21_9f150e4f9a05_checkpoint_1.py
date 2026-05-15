@@ -146,7 +146,7 @@ def upgrade(op: Operations = None):
         'llm_log',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('company_id', sa.Integer(), nullable=False),
-        sa.Column('api_key', sa.String(), nullable=True),
+        sa.Column('api_key', sa.LargeBinary(), nullable=True),
         sa.Column('model_id', sa.Integer(), nullable=True),
         sa.Column('model_group', sa.String(), nullable=True),
         sa.Column('input', sa.JSON(), nullable=True),

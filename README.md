@@ -28,27 +28,21 @@
 
 Minds Platform is dedicated to building an open foundation for frontier Artificial Intelligence, designed for developers, businesses, and individuals seeking AI systems they can truly control, extend and deploy anywhere (VPC, on-prem or Cloud).
 
-We believe useful AI systems require two fundamental capabilities: the ability to take meaningful actions autonomously **(Action and Execution)** and the ability to retrieve the right information **(Search and Retrieval)**. Our products are designed around these two foundations: 
+We believe useful AI systems require two fundamental capabilities: the ability to perform meaningful actions autonomously **(Automation)** and the ability to find and retrieve the right information **(Semantic Search)**. Our products are designed around these two foundations: 
 
-* [Minds Anton](https://github.com/mindsdb/anton) - **Action and Execution** self-improving AI agent that can get any type work done. Tell it what you need in plain language and it takes it from there - creating reports, organizing data, sending emails, calling APIs, building dashboards, scheduling tasks, etc. 
+* [Minds Anton](https://github.com/mindsdb/anton) - Self-improving **Automation** Agent that can get any type of work done. Tell it what you need in plain language and it takes it from there - creating reports, organizing data, sending emails, calling APIs, building dashboards, scheduling tasks, etc. 
 
-* [Minds Query Engine](https://github.com/mindsdb/engine) - Semantic **Search and Retrieval** query engine, used to index and organize large amounts of data from hundreds of structured and unstructured datasources.
+* [Minds Query Engine](https://github.com/mindsdb/engine) - **Semantic Search** query engine, used to index and organize large amounts of data from hundreds of structured and unstructured datasources.
 
 
 # USE CASES
 
 | Use Case | Solution |
 |---|---|
-| Plug-and-play conversational business intelligence across databases and SaaS tools | **Anton** |
-| Embeddable conversational business intelligence for applications and internal platforms | **Query Engine** |
-| Semantic search across company knowledge, documents, tickets, and cloud storage | **Anton** (+ **Query Engine** to optimize speed) |
-| AI coworkers that can take actions across email, APIs, dashboards, and enterprise systems | **Anton** |
-| Retrieval-Augmented Generation (RAG) infrastructure for embedded enterprise AI applications | **Query Engine** |
-| AI agents grounded in enterprise knowledge that can both answer questions and execute tasks | **Anton + Query Engine** |
-| Federated querying and retrieval across multiple structured and unstructured data sources in SQL | **Query Engine** |
 | Automated reporting, recurring workflows, and operational task execution | **Anton** |
-| Internal enterprise copilots with semantic retrieval and autonomous execution capabilities | **Anton + Query Engine** |
-| Enhanced Multi-source AI search and analytics without ETL pipelines | **Query Engine** |
+| Embeddable conversational business intelligence | **Query Engine** |
+| Search across large knowledge bases; documents, tickets, etc | **Query Engine** |
+| Search and Analyze data across large knowledge bases; documents, tickets, etc | **Anton +  Query Engine** |
 | AI operations assistants for sales, support, finance, and engineering teams | **Anton** |
 | Large scale Enterprise AI systems combining memory, retrieval, reasoning, and execution | **Anton + Query Engine** |
 ---

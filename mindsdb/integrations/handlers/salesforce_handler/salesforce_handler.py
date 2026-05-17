@@ -5,6 +5,8 @@ import salesforce_api
 from salesforce_api.exceptions import AuthenticationError, RestRequestCouldNotBeUnderstoodError
 
 from mindsdb.integrations.libs.api_handler import MetaAPIHandler
+from mindsdb.integrations.libs.passthrough import PassthroughMixin
+from mindsdb.integrations.libs.passthrough_types import PassthroughRequest
 from mindsdb.integrations.libs.response import (
     HandlerResponse as Response,
     HandlerStatusResponse as StatusResponse,
@@ -18,12 +20,28 @@ from mindsdb.utilities import log
 logger = log.getLogger(__name__)
 
 
-class SalesforceHandler(MetaAPIHandler):
+class SalesforceHandler(MetaAPIHandler, PassthroughMixin):
     """
     This handler handles the connection and execution of SQL statements on Salesforce.
     """
 
     name = "salesforce"
+
+    # REST passthrough configuration. Salesforce's base URL is per-org
+    # (`instance_url`) and is normally discovered at auth time. v1 requires
+    # the caller to supply both `access_token` and `instance_url` explicitly
+    # in connection_data; dynamic discovery from the username/password flow
+    # is deferred to a future refresh-aware mixin.
+    _bearer_token_arg = "access_token"
+    _base_url_default = None
+    _test_request = PassthroughRequest(method="GET", path="/services/data/v60.0/")
+
+    def _build_base_url(self) -> str | None:
+        data = self._get_connection_data()
+        instance_url = data.get("instance_url")
+        if not instance_url:
+            return None
+        return str(instance_url).rstrip("/")
 
     def __init__(self, name: Text, connection_data: Dict, **kwargs: Any) -> None:
         """

@@ -15,6 +15,8 @@ from mindsdb.integrations.handlers.shopify_handler.shopify_tables import (
     GiftCardsTable,
 )
 from mindsdb.integrations.libs.api_handler import MetaAPIHandler
+from mindsdb.integrations.libs.passthrough import PassthroughMixin
+from mindsdb.integrations.libs.passthrough_types import PassthroughRequest
 from mindsdb.integrations.libs.response import (
     HandlerStatusResponse as StatusResponse,
     HandlerResponse as Response,
@@ -33,12 +35,36 @@ from .connection_args import connection_args
 logger = log.getLogger(__name__)
 
 
-class ShopifyHandler(MetaAPIHandler):
+class ShopifyHandler(MetaAPIHandler, PassthroughMixin):
     """
     The Shopify handler implementation.
     """
 
     name = "shopify"
+
+    # REST passthrough configuration. Shopify sends the Admin API token in
+    # `X-Shopify-Access-Token`, not `Authorization: Bearer`, so we override
+    # the default auth header. v1 requires the caller to pre-supply the
+    # access token in connection_data — the existing client_id/client_secret
+    # OAuth dance runs inside `connect()` and isn't surfaced to the mixin.
+    _bearer_token_arg = "access_token"
+    _auth_header_name = "X-Shopify-Access-Token"
+    _auth_header_format = "{token}"
+    _auth_mode = "custom"
+    _base_url_default = None
+    # Version-less path — Shopify redirects this to the current stable
+    # Admin API version, so the probe survives quarterly API releases.
+    _test_request = PassthroughRequest(method="GET", path="/admin/shop.json")
+
+    def _build_base_url(self) -> str | None:
+        data = self._get_connection_data()
+        shop = data.get("shop_url")
+        if not shop:
+            return None
+        shop = str(shop)
+        if not shop.startswith(("http://", "https://")):
+            shop = f"https://{shop}"
+        return shop.rstrip("/")
 
     def __init__(self, name: str, **kwargs):
         """

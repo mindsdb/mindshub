@@ -1,0 +1,148 @@
+---
+title: REST API
+sidebarTitle: REST API
+---
+
+In this section, we present how to connect any REST API to MindsDB using bearer-token authentication.
+
+The REST API handler is a generic integration that lets you forward HTTP requests to any API through MindsDB using stored credentials. Unlike named integrations (HubSpot, Shopify, etc.), it requires no handler-specific knowledge — just a base URL and a bearer token.
+
+This is useful for APIs that MindsDB doesn't have a dedicated handler for, or when you only need direct HTTP access without SQL table mapping.
+
+## Connection
+
+The required arguments to establish a connection are as follows:
+
+- `base_url`: the base URL of the REST API (e.g. `https://api.example.com`). All request paths are appended to this URL.
+- `bearer_token`: the token used for authentication. Injected as `Authorization: Bearer <token>` on every request.
+
+Optional arguments:
+
+- `default_headers`: a JSON object of static headers added to every request (e.g. `{"Accept": "application/json"}`).
+- `allowed_hosts`: a list of allowed hostnames for requests. Defaults to the hostname of `base_url`. Use `["*"]` to disable host containment.
+- `test_path`: the path used by the test endpoint to verify connectivity. Defaults to `/`.
+
+To connect a REST API to MindsDB, create a new database:
+
+```sql
+CREATE DATABASE my_api
+WITH ENGINE = 'rest_api',
+PARAMETERS = {
+  "base_url": "https://api.example.com",
+  "bearer_token": "your_token_here"
+};
+```
+
+### Example: Connect to HubSpot
+
+```sql
+CREATE DATABASE my_hubspot
+WITH ENGINE = 'rest_api',
+PARAMETERS = {
+  "base_url": "https://api.hubapi.com",
+  "bearer_token": "pat-eu1-..."
+};
+```
+
+### Example: Connect with default headers and a custom test path
+
+```sql
+CREATE DATABASE my_internal_api
+WITH ENGINE = 'rest_api',
+PARAMETERS = {
+  "base_url": "https://internal.example.com/api/v2",
+  "bearer_token": "sk-...",
+  "default_headers": {"Accept": "application/json"},
+  "test_path": "/health"
+};
+```
+
+### Example: Multiple allowed hosts
+
+```sql
+CREATE DATABASE my_multi_region_api
+WITH ENGINE = 'rest_api',
+PARAMETERS = {
+  "base_url": "https://api.example.com",
+  "bearer_token": "your_token",
+  "allowed_hosts": ["api.example.com", "api.eu.example.com"]
+};
+```
+
+## Usage
+
+This handler is **passthrough-only** — it does not expose SQL tables. All interaction is through the REST passthrough endpoint.
+
+### Sending requests
+
+Forward HTTP requests to the upstream API:
+
+```
+POST /api/integrations/my_api/passthrough
+```
+
+```json
+{
+  "method": "GET",
+  "path": "/v1/users",
+  "query": {"limit": "10"},
+  "headers": {"Accept": "application/json"}
+}
+```
+
+The response wraps the upstream HTTP response:
+
+```json
+{
+  "status_code": 200,
+  "headers": {"content-type": "application/json"},
+  "body": {"results": [...]},
+  "content_type": "application/json"
+}
+```
+
+Supported HTTP methods: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`.
+
+### Testing the connection
+
+Verify that the base URL, token, and host allowlist are configured correctly:
+
+```
+POST /api/integrations/my_api/passthrough/test
+```
+
+A successful response:
+
+```json
+{"ok": true, "status_code": 200, "host": "api.example.com", "latency_ms": 140}
+```
+
+A failed response:
+
+```json
+{"ok": false, "error_code": "auth_failed", "message": "upstream rejected credentials; base URL and allowlist look correct"}
+```
+
+## Security
+
+- Credentials are stored in MindsDB and never exposed to the caller.
+- Requests are restricted to hostnames in the allowlist. Private and loopback IP addresses are rejected by default.
+- Callers cannot override `Authorization`, `Host`, `Cookie`, or `Proxy-*` headers.
+- If the upstream API echoes the token in responses, it is replaced with `[REDACTED_API_KEY]`.
+- Request bodies are capped at 1 MB, response bodies at 10 MB.
+
+<Warning>
+**`host 'X' is not in the datasource allowlist`**
+
+The request path resolved to a different hostname than `base_url`. Add the hostname to `allowed_hosts`, or use `["*"]` to disable host containment (not recommended for production).
+</Warning>
+
+<Warning>
+**`upstream rejected credentials (401/403)`**
+
+The token is invalid, expired, or missing required scopes. Verify the token with the upstream API provider.
+</Warning>
+
+<Info>
+For more information about available actions and development plans, visit [this page](https://github.com/mindsdb/mindsdb/blob/main/mindsdb/integrations/handlers/rest_api_handler/README.md).
+</Info>

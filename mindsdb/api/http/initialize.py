@@ -28,6 +28,7 @@ from mindsdb.api.http.namespaces.databases import ns_conf as databases_ns
 from mindsdb.api.http.namespaces.default import ns_conf as default_ns, check_session_auth
 from mindsdb.api.http.namespaces.file import ns_conf as file_ns
 from mindsdb.api.http.namespaces.handlers import ns_conf as handlers_ns
+from mindsdb.api.http.namespaces.integrations import ns_conf as integrations_ns
 from mindsdb.api.http.namespaces.knowledge_bases import ns_conf as knowledge_bases_ns
 from mindsdb.api.http.namespaces.models import ns_conf as models_ns
 from mindsdb.api.http.namespaces.projects import ns_conf as projects_ns
@@ -280,6 +281,7 @@ def initialize_app(is_restart: bool = False):
         agents_ns,
         jobs_ns,
         knowledge_bases_ns,
+        integrations_ns,
     ]
 
     for ns in protected_namespaces:

@@ -2,6 +2,9 @@ name: Build and deploy to staging
 
 permissions:
   contents: read
+  pull-requests: write
+  pages: write
+  id-token: write
 
 on:
   # Using pull_request instead of push on main because we want access to the pull request's details via 'github.event'

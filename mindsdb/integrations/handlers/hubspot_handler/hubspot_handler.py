@@ -28,6 +28,8 @@ from mindsdb.integrations.handlers.hubspot_handler.hubspot_association_utils imp
     PRIMARY_ASSOCIATIONS_CONFIG,
 )
 from mindsdb.integrations.libs.api_handler import MetaAPIHandler
+from mindsdb.integrations.libs.passthrough import PassthroughMixin
+from mindsdb.integrations.libs.passthrough_types import PassthroughRequest
 from mindsdb.integrations.utilities.sql_utils import FilterCondition, FilterOperator, extract_comparison_conditions
 
 from mindsdb.integrations.libs.response import (
@@ -133,16 +135,25 @@ def _map_type(data_type: str) -> MYSQL_DATA_TYPE:
     return type_map.get(data_type_upper, MYSQL_DATA_TYPE.VARCHAR)
 
 
-class HubspotHandler(MetaAPIHandler):
+class HubspotHandler(MetaAPIHandler, PassthroughMixin):
     """Hubspot API handler implementation"""
 
     name = "hubspot"
+
+    # REST passthrough — PAT (Private App Token) only. OAuth2 credentials
+    # (client_id/client_secret/refresh_token) are NOT supported here yet;
+    # that path needs an OAuthPassthroughMixin that refreshes tokens on
+    # demand. Passthrough with OAuth2 fails fast with a config error when
+    # `access_token` is missing from connection_data.
+    _bearer_token_arg = "access_token"
+    _base_url_default = "https://api.hubapi.com"
+    _test_request = PassthroughRequest(method="GET", path="/crm/v3/owners?limit=1")
 
     def __init__(self, name: str, **kwargs: Any) -> None:
         """Initialize the handler."""
         super().__init__(name)
 
-        connection_data = kwargs.get("connection_data", {})
+        connection_data = kwargs.get("connection_data") or {}
         self.connection_data = connection_data
         self.kwargs = kwargs
         self.handler_storage = kwargs.get("handler_storage")

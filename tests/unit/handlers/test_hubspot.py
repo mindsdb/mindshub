@@ -1196,5 +1196,58 @@ class TestHubspotHandler(BaseHandlerTestSetup, unittest.TestCase):
         self.assertIn("not supported", response.error_message)
 
 
+class TestHubspotPassthrough(unittest.TestCase):
+    """Exercise the PassthroughMixin retrofit (PAT path)."""
+
+    def _mock_response(self, status_code=200):
+        resp = MagicMock()
+        resp.status_code = status_code
+        resp.headers = {"Content-Type": "application/json"}
+        resp.iter_content = MagicMock(return_value=iter([b'{"results":[]}']))
+        resp.close = MagicMock()
+        return resp
+
+    @patch("mindsdb.integrations.libs.passthrough.requests.request")
+    def test_passthrough_uses_bearer_and_hubspot_base_url(self, mock_request):
+        mock_request.return_value = self._mock_response()
+        handler = HubspotHandler(
+            "hubspot",
+            connection_data={"access_token": "pat-abc123xyz"},
+        )
+        from mindsdb.integrations.libs.passthrough_types import PassthroughRequest
+
+        resp = handler.api_passthrough(PassthroughRequest("GET", "/crm/v3/owners"))
+
+        self.assertEqual(resp.status_code, 200)
+        args, kwargs = mock_request.call_args
+        self.assertEqual(args[0], "GET")
+        self.assertEqual(args[1], "https://api.hubapi.com/crm/v3/owners")
+        self.assertEqual(kwargs["headers"]["Authorization"], "Bearer pat-abc123xyz")
+
+    @patch("mindsdb.integrations.libs.passthrough.requests.request")
+    def test_test_passthrough_returns_ok_on_200(self, mock_request):
+        mock_request.return_value = self._mock_response(status_code=200)
+        handler = HubspotHandler("hubspot", connection_data={"access_token": "pat"})
+
+        result = handler.test_passthrough()
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["status_code"], 200)
+        self.assertEqual(result["host"], "api.hubapi.com")
+        self.assertIsInstance(result["latency_ms"], int)
+
+    @patch("mindsdb.integrations.libs.passthrough.requests.request")
+    def test_test_passthrough_returns_auth_failed_on_401(self, mock_request):
+        mock_request.return_value = self._mock_response(status_code=401)
+        handler = HubspotHandler("hubspot", connection_data={"access_token": "pat"})
+
+        result = handler.test_passthrough()
+
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["error_code"], "auth_failed")
+        self.assertEqual(result["status_code"], 401)
+        self.assertEqual(result["host"], "api.hubapi.com")
+
+
 if __name__ == "__main__":
     unittest.main()

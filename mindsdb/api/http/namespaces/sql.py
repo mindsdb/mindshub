@@ -86,25 +86,37 @@ class Query(Resource):
 
                 try:
                     handler = mysql_proxy.session.integration_controller.get_data_handler(db)
-                    result = handler.native_query(query)
+                    raw_result = handler.native_query(query)
                 except Exception as e:
-                    query_response = {"type": "error", "error_code": 0, "error_message": str(e)}
+                    error_type = "unexpected"
+                    result = SQLAnswer(
+                        resp_type=SQL_RESPONSE_TYPE.ERROR,
+                        error_code=0,
+                        error_message=str(e),
+                    )
                 else:
-                    if result.type == SQL_RESPONSE_TYPE.ERROR:
-                        query_response = {"type": "error", "error_code": 0, "error_message": result.error_message}
-                    elif result.type == SQL_RESPONSE_TYPE.OK:
-                        query_response = {"type": "ok"}
+                    if raw_result.type == SQL_RESPONSE_TYPE.ERROR:
+                        # raw_result will be ErrorResponse.
+                        error_type = "expected"
+                        result = SQLAnswer(
+                            resp_type=SQL_RESPONSE_TYPE.ERROR,
+                            error_code=0,
+                            error_message=raw_result.error_message,
+                        )
+                    elif raw_result.type == SQL_RESPONSE_TYPE.OK:
+                        result = SQLAnswer(
+                            resp_type=SQL_RESPONSE_TYPE.OK,
+                            error_code=0,
+                            error_message=None,
+                        )
                     else:
-                        df = result.data_frame
-                        result_set = ResultSet.from_df(df)
-                        query_response = {
-                            "type": "table",
-                            "column_names": result_set.get_column_names(),
-                            "data": result_set.to_lists(json_types=True),
-                        }
+                        # raw_result will be TableResponse.
+                        result_set = ResultSet.from_table_response(raw_result)
+                        result = SQLAnswer(
+                            resp_type=SQL_RESPONSE_TYPE.TABLE,
+                            result_set=result_set,
+                        )
 
-                query_response["context"] = mysql_proxy.get_context()
-                query_response = query_response, 200
             else:
                 try:
                     result: SQLAnswer = mysql_proxy.process_query(query)
@@ -137,16 +149,16 @@ class Query(Resource):
                     )
                     logger.exception("Error query processing:")
 
-                context = mysql_proxy.get_context()
+            context = mysql_proxy.get_context()
 
-                if response_format == ReponseFormat.JSONLINES:
-                    query_response = result.stream_http_response_jsonlines(context=context)
-                    query_response = Response(query_response, mimetype="application/jsonlines")
-                elif response_format == ReponseFormat.SSE:
-                    query_response = result.stream_http_response_sse(context=context)
-                    query_response = Response(query_response, mimetype="text/event-stream")
-                else:
-                    query_response = result.dump_http_response(context=context), 200
+            if response_format == ReponseFormat.JSONLINES:
+                query_response = result.stream_http_response_jsonlines(context=context)
+                query_response = Response(query_response, mimetype="application/jsonlines")
+            elif response_format == ReponseFormat.SSE:
+                query_response = result.stream_http_response_sse(context=context)
+                query_response = Response(query_response, mimetype="text/event-stream")
+            else:
+                query_response = result.dump_http_response(context=context), 200
 
         hooks.after_api_query(
             company_id=ctx.company_id,

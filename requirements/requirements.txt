@@ -47,7 +47,7 @@ pyarrow<=19.0.0 # used by pandas to read feather files in Files handler
 orjson==3.11.6
 
 mind-castle==0.5.0
-pydantic-ai==1.77.0 # Required for Pydantic AI agents
+pydantic-ai==1.99.0 # Required for Pydantic AI agents
 
 bs4 # for rag HTMLDocumentLoader
 urllib3>=2.6.3 # not directly required, pinned by Snyk to avoid a vulnerability

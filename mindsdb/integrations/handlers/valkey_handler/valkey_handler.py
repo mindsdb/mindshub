@@ -110,7 +110,8 @@ class ValkeyHandler(VectorStoreHandler):
             self._client = self._run(GlideClient.create(config))
             self.is_connected = True
             return self._client
-        except Exception:
+        except Exception as e:
+            logger.error(f"Error connecting to Valkey at {self._host}:{self._port}: {e}")
             self.is_connected = False
             raise
 
@@ -119,8 +120,8 @@ class ValkeyHandler(VectorStoreHandler):
         if self.is_connected and self._client is not None:
             try:
                 self._run(self._client.close())
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug(f"Error during Valkey disconnect: {e}")
         self._client = None
         self.is_connected = False
         if self._loop is not None and not self._loop.is_closed():
@@ -223,37 +224,40 @@ class ValkeyHandler(VectorStoreHandler):
         """
         self.connect()
 
-        for _, row in data.iterrows():
-            doc_id = str(row[TableField.ID.value])
-            key = f"{self._prefix}{table_name}:{doc_id}"
+        async def _batch_insert():
+            for _, row in data.iterrows():
+                doc_id = str(row[TableField.ID.value])
+                key = f"{self._prefix}{table_name}:{doc_id}"
 
-            # Serialize embeddings to float32 bytes
-            embeddings = row[TableField.EMBEDDINGS.value]
-            emb_bytes = np.array(embeddings, dtype=np.float32).tobytes()
+                # Serialize embeddings to float32 bytes
+                embeddings = row[TableField.EMBEDDINGS.value]
+                emb_bytes = np.array(embeddings, dtype=np.float32).tobytes()
 
-            field_map = {
-                ID_FIELD_NAME: doc_id,
-                VECTOR_FIELD_NAME: emb_bytes,
-            }
+                field_map = {
+                    ID_FIELD_NAME: doc_id,
+                    VECTOR_FIELD_NAME: emb_bytes,
+                }
 
-            # Content field
-            content = row.get(TableField.CONTENT.value)
-            if content is not None and pd.notna(content):
-                field_map[CONTENT_FIELD_NAME] = str(content)
-            else:
-                field_map[CONTENT_FIELD_NAME] = ""
+                # Content field
+                content = row.get(TableField.CONTENT.value)
+                if content is not None and pd.notna(content):
+                    field_map[CONTENT_FIELD_NAME] = str(content)
+                else:
+                    field_map[CONTENT_FIELD_NAME] = ""
 
-            # Metadata field
-            metadata = row.get(TableField.METADATA.value)
-            if metadata is not None and isinstance(metadata, dict):
-                field_map[METADATA_FIELD_NAME] = json.dumps(metadata)
-            else:
-                field_map[METADATA_FIELD_NAME] = "{}"
+                # Metadata field
+                metadata = row.get(TableField.METADATA.value)
+                if metadata is not None and isinstance(metadata, dict):
+                    field_map[METADATA_FIELD_NAME] = json.dumps(metadata)
+                else:
+                    field_map[METADATA_FIELD_NAME] = "{}"
 
-            try:
-                self._run(self._client.hset(key, field_map))
-            except Exception as e:
-                logger.error(f"Error inserting document {doc_id} into {table_name}: {e}")
+                try:
+                    await self._client.hset(key, field_map)
+                except Exception as e:
+                    logger.error(f"Error inserting document {doc_id} into {table_name}: {e}")
+
+        self._run(_batch_insert())
 
     def select(
         self,
@@ -307,28 +311,36 @@ class ValkeyHandler(VectorStoreHandler):
             result = self._run(ft.search(self._client, table_name, query_str, options))
             return self._parse_search_result(result, columns, include_score=True)
 
-        # Case B: ID-only lookup (direct hash access)
+        # Case B: ID-only lookup (direct hash access for EQUAL/IN only)
         if id_filters and not metadata_filters:
-            docs = []
-            for cond in id_filters:
-                if cond.op == FilterOperator.EQUAL:
-                    ids = [cond.value]
-                elif cond.op == FilterOperator.IN:
-                    ids = cond.value
-                else:
-                    ids = []
-                for doc_id in ids:
-                    key = f"{self._prefix}{table_name}:{doc_id}"
-                    fields = self._run(self._client.hgetall(key))
-                    if fields:
-                        docs.append(fields)
+            # Check if any filter uses NOT_EQUAL or NOT_IN — these cannot be
+            # resolved via direct hash lookup and need the FT.SEARCH path.
+            has_negation = any(
+                cond.op in (FilterOperator.NOT_EQUAL, FilterOperator.NOT_IN)
+                for cond in id_filters
+            )
+            if not has_negation:
+                docs = []
+                for cond in id_filters:
+                    if cond.op == FilterOperator.EQUAL:
+                        ids = [cond.value]
+                    elif cond.op == FilterOperator.IN:
+                        ids = cond.value
+                    else:
+                        ids = []
+                    for doc_id in ids:
+                        key = f"{self._prefix}{table_name}:{doc_id}"
+                        fields = self._run(self._client.hgetall(key))
+                        if fields:
+                            docs.append(fields)
 
-            rows = [self._parse_doc_fields(f, include_score=False) for f in docs]
-            df = pd.DataFrame(rows) if rows else pd.DataFrame(columns=columns or [c["name"] for c in self.SCHEMA])
-            if columns and not df.empty:
-                available = [c for c in columns if c in df.columns]
-                df = df[available]
-            return df
+                rows = [self._parse_doc_fields(f, include_score=False) for f in docs]
+                df = pd.DataFrame(rows) if rows else pd.DataFrame(columns=columns or [c["name"] for c in self.SCHEMA])
+                if columns and not df.empty:
+                    available = [c for c in columns if c in df.columns]
+                    df = df[available]
+                return df
+            # Fall through to Case C for negation filters
 
         # Case C: Full scan / metadata filter
         filter_expr = self._build_filter_expression(id_filters, metadata_filters)
@@ -434,6 +446,10 @@ class ValkeyHandler(VectorStoreHandler):
         Valkey Search does not support '*' as a match-all query, so this method
         iterates over all hash keys matching the table prefix and returns their
         fields as a DataFrame.
+
+        Note: SCAN does not guarantee key ordering. Offset-based pagination
+        may return inconsistent results across calls if keys are being
+        added or removed concurrently. This is a known Valkey/Redis limitation.
 
         Args:
             table_name: Name of the index/table.
@@ -576,12 +592,20 @@ class ValkeyHandler(VectorStoreHandler):
                 parts.append(f"-@{ID_FIELD_NAME}:{{{escaped}}}")
 
         for cond in metadata_filters:
-            # metadata conditions have column like "metadata.key"
+            # Metadata is stored as a flat JSON string in a TextField.
+            # Full-text search on a TextField cannot reliably filter by JSON
+            # sub-keys. We support basic substring matching for simple cases,
+            # but this is a best-effort approach with known limitations.
+            # For precise metadata filtering, consider using dedicated fields.
             field_name = cond.column.split(".", 1)[-1]
             if cond.op == FilterOperator.EQUAL:
-                parts.append(f'@{METADATA_FIELD_NAME}:"{field_name}" "{cond.value}"')
+                # Search for the value as a phrase within the metadata text field.
+                # This matches documents whose metadata JSON contains the value string.
+                escaped_value = str(cond.value).replace('"', '\\"')
+                parts.append(f'@{METADATA_FIELD_NAME}:("{escaped_value}")')
             elif cond.op == FilterOperator.NOT_EQUAL:
-                parts.append(f'-@{METADATA_FIELD_NAME}:"{cond.value}"')
+                escaped_value = str(cond.value).replace('"', '\\"')
+                parts.append(f'-@{METADATA_FIELD_NAME}:("{escaped_value}")')
 
         if not parts:
             return "*"

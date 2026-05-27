@@ -33,6 +33,8 @@ from mindsdb.integrations.libs.vectordatabase_handler import (
     FilterOperator,
 )
 
+from glide import RequestError
+
 
 # =============================================================================
 # Unit Tests
@@ -289,6 +291,227 @@ class TestValkeyHandlerUnit:
 
         h.drop_table("my_index")
         assert "my_index" in dropindex_called
+
+    def test_build_filter_expression_id_not_in(self):
+        """Builds correct negation filter for ID NOT_IN list."""
+        h = self._make_handler()
+        cond = FilterCondition("id", FilterOperator.NOT_IN, ["d1", "d2"])
+        expr = h._build_filter_expression([cond], [])
+        assert "-@id:{d1|d2}" in expr
+
+    def test_build_filter_expression_metadata_equal(self):
+        """Builds correct phrase search for metadata EQUAL condition."""
+        h = self._make_handler()
+        cond = FilterCondition("metadata.source", FilterOperator.EQUAL, "web")
+        expr = h._build_filter_expression([], [cond])
+        assert '@metadata:("web")' in expr
+
+    def test_build_filter_expression_metadata_not_equal(self):
+        """Builds correct negation phrase search for metadata NOT_EQUAL."""
+        h = self._make_handler()
+        cond = FilterCondition("metadata.source", FilterOperator.NOT_EQUAL, "web")
+        expr = h._build_filter_expression([], [cond])
+        assert '-@metadata:("web")' in expr
+
+    def test_build_filter_expression_metadata_escapes_quotes(self):
+        """Metadata filter properly escapes double quotes in values."""
+        h = self._make_handler()
+        cond = FilterCondition("metadata.desc", FilterOperator.EQUAL, 'say "hello"')
+        expr = h._build_filter_expression([], [cond])
+        assert '\\"hello\\"' in expr
+        assert '@metadata:(' in expr
+
+    @patch("mindsdb.integrations.handlers.valkey_handler.valkey_handler.ft")
+    def test_select_id_not_equal_falls_through_to_search(self, mock_ft):
+        """NOT_EQUAL on id falls through to FT.SEARCH instead of returning empty."""
+        h = self._make_handler({"vector_dimension": 4})
+        h.is_connected = True
+        h._client = MagicMock()
+
+        search_called = {}
+
+        async def mock_search(client, index_name, query, options=None):
+            search_called["query"] = query
+            return [0, {}]
+
+        mock_ft.search = mock_search
+
+        cond = FilterCondition("id", FilterOperator.NOT_EQUAL, "doc1")
+        result = h.select("t", columns=["id"], conditions=[cond])
+
+        # Should have called ft.search with negation filter, not returned empty
+        assert "query" in search_called
+        assert "-@id:{doc1}" in search_called["query"]
+
+    @patch("mindsdb.integrations.handlers.valkey_handler.valkey_handler.ft")
+    def test_select_id_not_in_falls_through_to_search(self, mock_ft):
+        """NOT_IN on id falls through to FT.SEARCH instead of returning empty."""
+        h = self._make_handler({"vector_dimension": 4})
+        h.is_connected = True
+        h._client = MagicMock()
+
+        search_called = {}
+
+        async def mock_search(client, index_name, query, options=None):
+            search_called["query"] = query
+            return [0, {}]
+
+        mock_ft.search = mock_search
+
+        cond = FilterCondition("id", FilterOperator.NOT_IN, ["doc1", "doc2"])
+        result = h.select("t", columns=["id"], conditions=[cond])
+
+        assert "query" in search_called
+        assert "-@id:{doc1|doc2}" in search_called["query"]
+
+    def test_connect_logs_error_on_failure(self):
+        """connect logs error when connection fails."""
+        h = self._make_handler({"host": "nonexistent.invalid", "port": 9999})
+        with patch("mindsdb.integrations.handlers.valkey_handler.valkey_handler.logger") as mock_logger:
+            with pytest.raises(Exception):
+                h.connect()
+            mock_logger.error.assert_called_once()
+            assert "nonexistent.invalid" in mock_logger.error.call_args[0][0]
+
+    def test_disconnect_logs_debug_on_error(self):
+        """disconnect logs at debug level when close raises."""
+        h = self._make_handler()
+        h.is_connected = True
+        h._client = MagicMock()
+
+        async def mock_close():
+            raise RuntimeError("close failed")
+
+        h._client.close = mock_close
+
+        with patch("mindsdb.integrations.handlers.valkey_handler.valkey_handler.logger") as mock_logger:
+            h.disconnect()
+            mock_logger.debug.assert_called_once()
+            assert "close failed" in mock_logger.debug.call_args[0][0]
+
+        assert h.is_connected is False
+        assert h._client is None
+
+    def test_check_connection_failure(self):
+        """check_connection returns failure status on connection error."""
+        h = self._make_handler({"host": "nonexistent.invalid", "port": 9999})
+        status = h.check_connection()
+        assert status.success is False
+        assert status.error_message is not None
+
+    def test_delete_no_conditions_raises(self):
+        """delete raises exception when no conditions provided."""
+        h = self._make_handler()
+        h.is_connected = True
+        h._client = MagicMock()
+        with pytest.raises(Exception, match="Delete requires at least one condition"):
+            h.delete("table", conditions=None)
+
+    def test_parse_search_result_empty(self):
+        """_parse_search_result returns empty DataFrame on zero results."""
+        h = self._make_handler()
+        result = [0, {}]
+        df = h._parse_search_result(result, columns=["id", "content"], include_score=False)
+        assert len(df) == 0
+        assert "id" in df.columns
+
+    @patch("mindsdb.integrations.handlers.valkey_handler.valkey_handler.ft")
+    def test_select_metadata_filter_uses_search(self, mock_ft):
+        """Select with metadata filter uses FT.SEARCH with correct expression."""
+        h = self._make_handler({"vector_dimension": 4})
+        h.is_connected = True
+        h._client = MagicMock()
+
+        search_called = {}
+
+        async def mock_search(client, index_name, query, options=None):
+            search_called["query"] = query
+            return [0, {}]
+
+        mock_ft.search = mock_search
+
+        cond = FilterCondition("metadata.source", FilterOperator.EQUAL, "web")
+        h.select("t", columns=["id"], conditions=[cond])
+
+        assert "query" in search_called
+        assert '@metadata:("web")' in search_called["query"]
+
+    @patch("mindsdb.integrations.handlers.valkey_handler.valkey_handler.ft")
+    def test_get_columns_nonexistent_table(self, mock_ft):
+        """get_columns returns error response for non-existent table."""
+        h = self._make_handler()
+        h.is_connected = True
+        h._client = MagicMock()
+
+        async def mock_info(client, index_name):
+            raise RequestError("Unknown Index name: not found")
+
+        mock_ft.info = mock_info
+
+        result = h.get_columns("no_such_table")
+        assert result.resp_type == RESPONSE_TYPE.ERROR
+        assert "does not exist" in result.error_message
+
+    def test_insert_handles_none_content_and_metadata(self):
+        """insert sets empty defaults when content is None and metadata is not a dict."""
+        h = self._make_handler()
+        h.is_connected = True
+        h._client = MagicMock()
+
+        captured_calls = []
+
+        async def mock_hset(key, field_map):
+            captured_calls.append((key, field_map))
+            return 1
+
+        h._client.hset = mock_hset
+
+        df = pd.DataFrame(
+            {
+                "id": ["doc1"],
+                "content": [None],
+                "embeddings": [[0.1, 0.2, 0.3, 0.4]],
+                "metadata": ["not_a_dict"],
+            }
+        )
+        h.insert("table", df)
+
+        assert len(captured_calls) == 1
+        _, field_map = captured_calls[0]
+        assert field_map["content"] == ""
+        assert field_map["metadata"] == "{}"
+
+    def test_scan_all_docs_with_offset_and_limit(self):
+        """_scan_all_docs respects offset and limit parameters."""
+        h = self._make_handler()
+        h.is_connected = True
+        h._client = MagicMock()
+
+        # Mock scan to return 5 keys
+        async def mock_scan(cursor, match=None, count=None):
+            if cursor == b"0":
+                return [b"0", [f"doc:t:doc{i}".encode() for i in range(5)]]
+            return [b"0", []]
+
+        h._client.scan = mock_scan
+
+        # Mock hgetall for each key
+        async def mock_hgetall(key):
+            doc_id = key.split(":")[-1]
+            return {
+                b"id": doc_id.encode(),
+                b"content": b"text",
+                b"embeddings": np.array([0.1, 0.2, 0.3, 0.4], dtype=np.float32).tobytes(),
+                b"metadata": b"{}",
+            }
+
+        h._client.hgetall = mock_hgetall
+
+        # Request offset=1, limit=2
+        df = h._scan_all_docs("t", columns=["id"], offset=1, limit=2)
+        assert len(df) == 2
+        assert df.iloc[0]["id"] == "doc1"
+        assert df.iloc[1]["id"] == "doc2"
 
 
 # =============================================================================
@@ -637,7 +860,11 @@ class TestValkeyHandlerIntegration:
             handler.drop_table(unique_table, if_exists=True)
 
     def test_large_vectors(self, unique_table):
-        """Test with high-dimensional vectors (768 dims)."""
+        """Test with high-dimensional vectors (768 dims).
+
+        Note: Uses its own handler instance because it needs a different
+        vector_dimension than the class-level fixture.
+        """
         dim = 768
         h = ValkeyHandler(
             "test_large",
@@ -650,11 +877,11 @@ class TestValkeyHandlerIntegration:
             },
             handler_storage=MagicMock(),
         )
-        status = h.check_connection()
-        if not status.success:
-            pytest.skip(f"Valkey not available: {status.error_message}")
-
         try:
+            status = h.check_connection()
+            if not status.success:
+                pytest.skip(f"Valkey not available: {status.error_message}")
+
             h.create_table(unique_table)
             vec = np.random.rand(dim).tolist()
             df = pd.DataFrame(

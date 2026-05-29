@@ -56,6 +56,11 @@ METADATA_FIELD_NAME = "metadata"
 # Safety limits for SCAN operations
 _MAX_SCAN_ITERATIONS = 100_000
 _INSERT_BATCH_SIZE = 100
+# Maximum documents returned by FT.SEARCH for metadata-based delete
+_DELETE_SEARCH_LIMIT = 10_000
+# Default request timeout in milliseconds (Glide default is 250ms which is
+# too short for vector search on larger indexes)
+_DEFAULT_REQUEST_TIMEOUT_MS = 5000
 
 
 class ValkeyHandler(VectorStoreHandler):
@@ -75,6 +80,8 @@ class ValkeyHandler(VectorStoreHandler):
         self._vector_dimension = int(connection_data.get("vector_dimension", DEFAULT_VECTOR_DIMENSION))
         self._distance_metric = connection_data.get("distance_metric", DEFAULT_DISTANCE_METRIC).upper()
         self._prefix = connection_data.get("prefix", DEFAULT_PREFIX)
+        self._use_tls = bool(connection_data.get("use_tls", False))
+        self._request_timeout = int(connection_data.get("request_timeout", _DEFAULT_REQUEST_TIMEOUT_MS))
 
         self._client: GlideClient | None = None
         self.is_connected = False
@@ -123,6 +130,8 @@ class ValkeyHandler(VectorStoreHandler):
                 credentials=credentials,
                 database_id=self._db,
                 client_name="mindsdb_valkey_handler",
+                use_tls=self._use_tls,
+                request_timeout=self._request_timeout,
             )
             self._client = self._run(GlideClient.create(config))
             self.is_connected = True
@@ -160,7 +169,7 @@ class ValkeyHandler(VectorStoreHandler):
             if response.success and need_to_close:
                 self.disconnect()
             if not response.success and self.is_connected:
-                self.is_connected = False
+                self.disconnect()
         return response
 
     def create_table(self, table_name: str, if_not_exists: bool = True):
@@ -211,11 +220,11 @@ class ValkeyHandler(VectorStoreHandler):
         try:
             self._run(ft.dropindex(self._client, table_name))
         except RequestError as e:
-            if "not found" in str(e).lower() and if_exists:
-                return
-            raise
+            if "not found" not in str(e).lower() or not if_exists:
+                raise
 
-        # Clean up hash keys with the table's prefix
+        # Always clean up hash keys with the table's prefix (handles orphans
+        # from prior partial failures where the index was dropped but keys remain)
         cursor = b"0"
         iterations = 0
         while True:
@@ -251,6 +260,7 @@ class ValkeyHandler(VectorStoreHandler):
 
         async def _batch_insert():
             tasks = []
+            failed: list[str] = []
             for _, row in data.iterrows():
                 doc_id = str(row[TableField.ID.value])
                 key = f"{self._prefix}{table_name}:{doc_id}"
@@ -278,22 +288,43 @@ class ValkeyHandler(VectorStoreHandler):
                 else:
                     field_map[METADATA_FIELD_NAME] = "{}"
 
-                tasks.append(self._client.hset(key, field_map))
+                tasks.append((doc_id, self._client.hset(key, field_map)))
 
                 # Flush in batches to avoid excessive memory usage
                 if len(tasks) >= _INSERT_BATCH_SIZE:
-                    results = await asyncio.gather(*tasks, return_exceptions=True)
-                    for i, result in enumerate(results):
+                    coros = [t[1] for t in tasks]
+                    ids = [t[0] for t in tasks]
+                    results = await asyncio.gather(*coros, return_exceptions=True)
+                    for doc_id_r, result in zip(ids, results):
                         if isinstance(result, Exception):
-                            logger.error("Error inserting document into %s: %s", table_name, result)
+                            logger.error(
+                                "Error inserting document %s into %s: %s",
+                                doc_id_r,
+                                table_name,
+                                result,
+                            )
+                            failed.append(doc_id_r)
                     tasks = []
 
             # Flush remaining
             if tasks:
-                results = await asyncio.gather(*tasks, return_exceptions=True)
-                for result in results:
+                coros = [t[1] for t in tasks]
+                ids = [t[0] for t in tasks]
+                results = await asyncio.gather(*coros, return_exceptions=True)
+                for doc_id_r, result in zip(ids, results):
                     if isinstance(result, Exception):
-                        logger.error("Error inserting document into %s: %s", table_name, result)
+                        logger.error(
+                            "Error inserting document %s into %s: %s",
+                            doc_id_r,
+                            table_name,
+                            result,
+                        )
+                        failed.append(doc_id_r)
+
+            if failed:
+                raise Exception(
+                    f"Failed to insert {len(failed)}/{len(data)} documents into {table_name}: {failed[:10]}"
+                )
 
         self._run(_batch_insert())
 
@@ -412,10 +443,24 @@ class ValkeyHandler(VectorStoreHandler):
                     ids_to_delete.append(str(cond.value))
                 elif cond.op == FilterOperator.IN:
                     ids_to_delete.extend(str(v) for v in cond.value)
+                elif cond.op in (FilterOperator.NOT_EQUAL, FilterOperator.NOT_IN):
+                    # Use FT.SEARCH with negation filter to find matching docs
+                    filter_expr = self._build_filter_expression([cond], [])
+                    options = FtSearchOptions(limit=FtSearchLimit(0, _DELETE_SEARCH_LIMIT), dialect=2)
+                    result = self._run(ft.search(self._client, table_name, filter_expr, options))
+                    if result[0] > 0 and len(result) > 1:
+                        for doc_key in result[1].keys():
+                            key_str = doc_key.decode() if isinstance(doc_key, bytes) else doc_key
+                            prefix_str = f"{self._prefix}{table_name}:"
+                            if key_str.startswith(prefix_str):
+                                doc_id = key_str[len(prefix_str) :]
+                            else:
+                                doc_id = key_str.split(":", 2)[-1]
+                            ids_to_delete.append(doc_id)
             elif cond.column.startswith(TableField.METADATA.value):
                 # Search for matching docs to get their IDs
                 filter_expr = self._build_filter_expression([], [cond])
-                options = FtSearchOptions(limit=FtSearchLimit(0, 10000), dialect=2)
+                options = FtSearchOptions(limit=FtSearchLimit(0, _DELETE_SEARCH_LIMIT), dialect=2)
                 result = self._run(ft.search(self._client, table_name, filter_expr, options))
                 if result[0] > 0 and len(result) > 1:
                     for doc_key in result[1].keys():

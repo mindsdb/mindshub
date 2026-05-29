@@ -39,6 +39,16 @@ connection_args = OrderedDict(
         "description": "Key prefix for document hashes",
         "required": False,
     },
+    use_tls={
+        "type": ARG_TYPE.BOOL,
+        "description": "Enable TLS/SSL connection (required for AWS ElastiCache, MemoryDB)",
+        "required": False,
+    },
+    request_timeout={
+        "type": ARG_TYPE.INT,
+        "description": "Request timeout in milliseconds (default: 5000)",
+        "required": False,
+    },
 )
 
 connection_args_example = OrderedDict(

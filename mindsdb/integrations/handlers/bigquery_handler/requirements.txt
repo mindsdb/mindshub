@@ -1,3 +1,0 @@
-google-cloud-bigquery[pandas]
-sqlalchemy-bigquery
--r mindsdb/integrations/utilities/handlers/auth_utilities/google/requirements.txt

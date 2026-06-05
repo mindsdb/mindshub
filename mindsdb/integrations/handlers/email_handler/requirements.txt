@@ -1,2 +1,0 @@
-chardet
-# bs4  # in main dependencies list

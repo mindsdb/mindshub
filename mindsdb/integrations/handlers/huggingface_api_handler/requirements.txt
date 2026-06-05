@@ -1,3 +1,0 @@
-hugging_py_face
-huggingface-hub
-filelock>=3.20.3 # not directly required, pinned by Snyk to avoid a vulnerability

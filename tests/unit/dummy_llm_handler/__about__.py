@@ -1,9 +1,0 @@
-__title__ = ''
-__package_name__ = 'mindsdb_dummy_llm_handler'
-__version__ = '0.0.1'
-__description__ = ""
-__author__ = ''
-__github__ = ''
-__pypi__ = ''
-__license__ = ''
-__copyright__ = ''

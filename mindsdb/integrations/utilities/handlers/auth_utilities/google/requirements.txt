@@ -1,2 +1,0 @@
-google-auth
-google-auth-oauthlib

@@ -1,2 +1,0 @@
-lxml==5.3.0 # Is this transitive dependency?
-faiss-cpu==1.13.2 # default vector storage

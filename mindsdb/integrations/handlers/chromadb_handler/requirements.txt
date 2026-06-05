@@ -1,2 +1,0 @@
-chromadb~=0.6.3
-onnxruntime==1.20.1 # 1.21.0 (latest as of April 10, 2025) causes issues in Windows

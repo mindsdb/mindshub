@@ -1,3 +1,0 @@
-
-class PlanningException(Exception):
-    pass

@@ -6,7 +6,7 @@ _NPM_STAMP := $(FRONTEND)/node_modules/.package-lock.json
 _API_STAMP  := $(API)/.venv
 _AGENT_STAMP := $(AGENT)/.venv
 
-.PHONY: setup dev dev-web build dist-mac dist-win
+.PHONY: setup dev dev-web build dist-mac dist-win docker-build docker-up docker-down
 
 $(_NPM_STAMP): $(FRONTEND)/package-lock.json
 	npm --prefix $(FRONTEND) ci
@@ -41,3 +41,12 @@ dist-mac: $(_NPM_STAMP)
 
 dist-win: $(_NPM_STAMP)
 	npm --prefix $(FRONTEND) run dist:win
+
+docker-build:
+	docker compose build
+
+docker-up:
+	docker compose up
+
+docker-down:
+	docker compose down

@@ -7,3 +7,6 @@
 [submodule "backend/core_agent"]
 	path = backend/core_agent
 	url = https://github.com/mindsdb/anton
+[submodule "backend/data-vault"]
+	path = backend/data-vault
+	url = https://github.com/mindsdb/data-vault

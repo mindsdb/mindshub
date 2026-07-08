@@ -12,11 +12,15 @@ services:
       - cowork-data:/home/cowork/.cowork
     # ENG-459: do NOT publish 26866 to the host. Publishing it exposed the raw,
     # unauthenticated API directly, bypassing nginx. `expose` keeps the port
-    # reachable only on the compose network — nginx (web) still proxies to it as
-    # `api:26866`. NOTE: the nginx /v1/ path is itself still unauthenticated
-    # until app-layer auth (COWORK_REQUIRE_AUTH / bearer-token-auth) lands.
+    # reachable only on the compose network. NOTE: the nginx /v1/ path is
+    # itself still unauthenticated until app-layer auth
+    # (COWORK_REQUIRE_AUTH / bearer-token-auth) lands.
     expose:
       - "26866"
+    # ENG-457: `web` now shares this container's network namespace (see
+    # below), so the host's published port lands here instead of on `web`.
+    ports:
+      - "3000:80"
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python", "-c",
@@ -30,8 +34,13 @@ services:
     build:
       context: .
       dockerfile: docker/web.Dockerfile
-    ports:
-      - "3000:80"
+    # ENG-457: share api's network namespace so nginx's proxy to cowork-server
+    # is a genuine loopback hop (127.0.0.1), not a separate-container bridge
+    # hop. cowork-server's `_require_local` guard on /settings/reveal-key and
+    # /raw only allows loopback callers — on the default bridge network the
+    # proxied request would arrive as this container's bridge IP and get
+    # 403'd, breaking onboarding's calls to those endpoints.
+    network_mode: "service:api"
     depends_on:
       api:
         condition: service_healthy

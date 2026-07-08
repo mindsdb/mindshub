@@ -37,7 +37,7 @@ services:
     # ENG-457: share api's network namespace so nginx's proxy to cowork-server
     # is a genuine loopback hop (127.0.0.1), not a separate-container bridge
     # hop. cowork-server's `_require_local` guard on /settings/reveal-key and
-    # /raw only allows loopback callers — on the default bridge network the
+    # /raw only allows loopback callers. On the default bridge network the
     # proxied request would arrive as this container's bridge IP and get
     # 403'd, breaking onboarding's calls to those endpoints.
     network_mode: "service:api"

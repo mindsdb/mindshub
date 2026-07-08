@@ -10,8 +10,13 @@ services:
       # ANTON_ANTHROPIC_API_KEY: "sk-ant-..."
     volumes:
       - cowork-data:/home/cowork/.cowork
-    ports:
-      - "26866:26866"
+    # ENG-459: do NOT publish 26866 to the host. Publishing it exposed the raw,
+    # unauthenticated API directly, bypassing nginx. `expose` keeps the port
+    # reachable only on the compose network — nginx (web) still proxies to it as
+    # `api:26866`. NOTE: the nginx /v1/ path is itself still unauthenticated
+    # until app-layer auth (COWORK_REQUIRE_AUTH / bearer-token-auth) lands.
+    expose:
+      - "26866"
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python", "-c",

@@ -127,6 +127,22 @@ new SHA in the superproject as one reviewable commit.
 remind you a teammate's pin bump left a module behind — run `make baseline` after
 pulling the superproject to align.
 
+## Branch naming
+
+Linear is connected to GitHub (`mindsdb` org). Every branch must include a Linear issue ID so the PR is automatically linked to the ticket.
+
+**Format:** `<issue-id>-<short-description>` — copy it directly from the issue in Linear (branch icon on any issue card).
+
+```
+eng-123-fix-sso-no-credits
+eng-456-add-attachment-thumbnails
+```
+
+- The team prefix is **`ENG`** (lowercase in branch names: `eng-`)
+- Linear generates the full branch name for you — always use that, don't invent one
+- PRs opened from a correctly named branch auto-attach to the Linear issue; no manual linking needed
+- Hotfixes that don't have a ticket yet: create the ticket first, then branch from it
+
 ## Running locally (web browser mode)
 
 After initializing submodules, start the full stack with:

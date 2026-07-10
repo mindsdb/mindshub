@@ -2,11 +2,11 @@
 
 <div align="center">
 
-# MindsHub Cowork
+# MindsHub 
 
-**The unified workspace where open-source agents get work done for you.**
+**The unified workspace where open-source models get things done for you.**
 
-_Delegate anything. It comes back done._
+_Make AI do actual work. Swap the model anytime — keep everything you've built._
 
 [![Release](https://img.shields.io/github/v/release/mindsdb/minds?logo=github&label=release)](https://github.com/mindsdb/minds/releases)
 [![Stars](https://img.shields.io/github/stars/mindsdb/minds?logo=github)](https://github.com/mindsdb/minds/stargazers)
@@ -22,10 +22,13 @@ _Delegate anything. It comes back done._
 </div>
 
 <p align="center">
-  <img alt="MindsHub Cowork — the unified workspace" width="100%" src="https://github.com/user-attachments/assets/769e6463-0a9d-45ae-83d1-ef9e234775d3" />
+  <img width="640" height="480" alt="cowork" src="https://github.com/user-attachments/assets/048761b8-aa77-4506-9c4d-32e2fdecbb60" />
+
+
+
 </p>
 
-**MindsHub Cowork** is the unified workspace where you delegate entire tasks — research, analysis, reporting, scheduled operations — and collect finished, shareable results. Connect your data, route each step to the right model, run open-source agents, and turn their output into artifacts you can publish. It's open source and runs anywhere — your machine, your VPC, or the hosted app.
+**MindsHub Cowork** is the unified workspace where you delegate entire projects — apps, websites, research, analysis, reporting, scheduled operations — and collect finished, shareable results. Connect your data, route work to any model (open or proprietary), run open-source agents, and turn their output into web applications you can publish. It's open source and runs anywhere — your machine, your VPC, or the hosted app.
 
 This repository is the **platform superproject**: it pulls together the desktop/web app, the agent backend, and the data engine so you can build and run the whole stack from source.
 
@@ -36,7 +39,7 @@ Pick whichever fits:
 - **Web — nothing to install.** Open **[console.mindshub.ai](https://console.mindshub.ai/?utm_source=github&utm_medium=repo-readme&utm_campaign=minds-readme)** and sign in.
 - **macOS.** [Download the desktop app](https://downloads.mindsdb.com/mindshub-cowork/mac/mindshub-cowork-latest.pkg) (`.pkg`).
 - **Windows.** [Download the desktop app](https://downloads.mindsdb.com/mindshub-cowork/windows/mindshub-cowork-latest.exe) (`.exe`).
-- **Run it open source.** [Build from source](#build-from-source) — see below.
+- **Linux.** [Build from source](#build-from-source).
 
 Free to start. Pro adds all frontier models and private artifacts — see [pricing](https://mindshub.ai/pricing?utm_source=github&utm_medium=repo-readme&utm_campaign=minds-readme).
 

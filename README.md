@@ -19,6 +19,10 @@ _Make AI do actual work. Swap the model anytime — keep everything you've built
 [Pricing](https://mindshub.ai/pricing?utm_source=github&utm_medium=repo-readme&utm_campaign=minds-readme) ·
 [Discord](https://mindshub.ai/discord)
 
+<p align="center">
+  <sub>Read this in: <a href="README.zh.md">中文</a> · <a href="README.es.md">Español</a> · <a href="README.pt.md">Português</a> · <a href="README.hi.md">हिन्दी</a></sub>
+</p>
+
 </div>
 
 <p align="center">

@@ -2,11 +2,11 @@
 
 <div align="center">
 
-# MindsHub
+<a href="https://mindshub.ai/?utm_source=github&utm_medium=repo-readme&utm_campaign=minds-readme">
+  <img src="assets/mindshub-banner.svg" alt="MindsHub — La mejor inteligencia debería ser abierta." width="100%" />
+</a>
 
-**El espacio de trabajo unificado donde los modelos de código abierto hacen las cosas por ti.**
-
-_Haz que la IA haga trabajo real. Cambia de modelo cuando quieras — conserva todo lo que has construido._
+**MindsHub es un espacio de trabajo con agentes para realizar trabajo intelectual y desarrollar software, con entornos de ejecución de agentes de código abierto y modelos a tu elección.**
 
 [![Release](https://img.shields.io/github/v/release/mindsdb/minds?logo=github&label=release)](https://github.com/mindsdb/minds/releases)
 [![Stars](https://img.shields.io/github/stars/mindsdb/minds?logo=github)](https://github.com/mindsdb/minds/stargazers)
@@ -26,12 +26,14 @@ _Haz que la IA haga trabajo real. Cambia de modelo cuando quieras — conserva t
 </div>
 
 <p align="center">
-  <img width="640" height="480" alt="cowork" src="https://github.com/user-attachments/assets/048761b8-aa77-4506-9c4d-32e2fdecbb60" />
+  <img width="640" height="480" alt="Espacio de trabajo con agentes de MindsHub" src="https://github.com/user-attachments/assets/048761b8-aa77-4506-9c4d-32e2fdecbb60" />
 </p>
 
-**MindsHub Cowork** es el espacio de trabajo unificado donde delegas proyectos completos —apps, sitios web, investigación, análisis, informes, operaciones programadas— y recibes resultados terminados y listos para compartir. Conecta tus datos, dirige el trabajo a cualquier modelo (abierto o propietario), ejecuta agentes de código abierto y convierte su resultado en aplicaciones web que puedes publicar. Es de código abierto y funciona en cualquier lugar: tu máquina, tu VPC o la app alojada.
+MindsHub te da libertad para elegir entre modelos y proveedores sin quedar atado a un solo ecosistema. Usa su espacio de trabajo con agentes para investigación, análisis, creación de contenido y desarrollo de software. Es de código abierto y puede ejecutarse en tu equipo, en tu VPC o como aplicación alojada.
 
 Este repositorio es el **superproyecto de la plataforma**: reúne la app de escritorio/web, el backend del agente y el motor de datos para que puedas construir y ejecutar toda la pila desde el código fuente.
+
+Para incorporar inteligencia a agentes y productos mediante una sola API, consulta **[MindsHub Inference](https://mindshub.ai/unified-inference)**. Ofrece modelos y proveedores a tu elección, con un único conjunto de controles y una sola factura.
 
 ## Primeros pasos
 
@@ -116,7 +118,7 @@ Los submódulos están configurados con `ignore = all`, así que tu trabajo en r
 
 ## Despliega en cualquier lugar
 
-Cowork está diseñado para un despliegue flexible —infraestructura **en la nube, VPC, on-prem, air-gapped e híbrida**— para que mantengas el control total sobre tu infraestructura, modelos, permisos y datos.
+MindsHub está diseñado para un despliegue flexible —infraestructura **en la nube, VPC, on-prem, air-gapped e híbrida**— para que mantengas el control total sobre tu infraestructura, modelos, permisos y datos.
 
 ## Ayuda y soporte
 
@@ -127,7 +129,7 @@ Cowork está diseñado para un despliegue flexible —infraestructura **en la nu
 
 ## 🤝 Contribuir
 
-Cowork es de código abierto y las contribuciones son bienvenidas —código, integraciones, documentación, reportes de bugs e ideas de funcionalidades. Lee la [documentación](https://docs.mindshub.ai/?utm_source=github&utm_medium=repo-readme&utm_campaign=minds-readme) para configurarte, explora los [issues abiertos](https://github.com/mindsdb/minds/issues) y saluda en [Discord](https://mindshub.ai/discord).
+MindsHub es de código abierto y las contribuciones son bienvenidas —código, integraciones, documentación, reportes de bugs e ideas de funcionalidades. Lee la [documentación](https://docs.mindshub.ai/?utm_source=github&utm_medium=repo-readme&utm_campaign=minds-readme) para configurarte, explora los [issues abiertos](https://github.com/mindsdb/minds/issues) y saluda en [Discord](https://mindshub.ai/discord).
 
 ## 🔒 Seguridad
 

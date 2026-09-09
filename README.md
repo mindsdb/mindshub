@@ -6,9 +6,7 @@
   <img src="assets/mindshub-banner.svg" alt="MindsHub — The best intelligence should be open." width="100%" />
 </a>
 
-# MindsHub
-
-**An agent workspace for completing knowledge work and developing software, with open-source agent harnesses and a choice of models.**
+**MindsHub is an agent workspace for completing knowledge work and developing software, with open-source agent harnesses and a choice of models.**
 
 [![Release](https://img.shields.io/github/v/release/mindsdb/minds?logo=github&label=release)](https://github.com/mindsdb/minds/releases)
 [![Stars](https://img.shields.io/github/stars/mindsdb/minds?logo=github)](https://github.com/mindsdb/minds/stargazers)
@@ -28,10 +26,7 @@
 </div>
 
 <p align="center">
-  <img width="640" height="480" alt="cowork" src="https://github.com/user-attachments/assets/048761b8-aa77-4506-9c4d-32e2fdecbb60" />
-
-
-
+  <img width="640" height="480" alt="MindsHub agent workspace" src="https://github.com/user-attachments/assets/048761b8-aa77-4506-9c4d-32e2fdecbb60" />
 </p>
 
 MindsHub gives you the freedom to choose among models and providers instead of being locked into one ecosystem. Use its agent workspace for research, analysis, content creation, and software development. It is open source and can run on your machine, in your VPC, or through the hosted app.

@@ -2,11 +2,11 @@
 
 <div align="center">
 
-# MindsHub
+<a href="https://mindshub.ai/?utm_source=github&utm_medium=repo-readme&utm_campaign=minds-readme">
+  <img src="assets/mindshub-banner.svg" alt="MindsHub — 最好的智能应当开放。" width="100%" />
+</a>
 
-**开源模型为你完成任务的统一工作空间。**
-
-_让 AI 真正干活。随时切换模型——你搭建的一切都保留下来。_
+**MindsHub 是一个智能体工作空间，让你使用开源智能体执行框架和自选模型完成知识工作、开发软件。**
 
 [![Release](https://img.shields.io/github/v/release/mindsdb/minds?logo=github&label=release)](https://github.com/mindsdb/minds/releases)
 [![Stars](https://img.shields.io/github/stars/mindsdb/minds?logo=github)](https://github.com/mindsdb/minds/stargazers)
@@ -26,12 +26,14 @@ _让 AI 真正干活。随时切换模型——你搭建的一切都保留下来
 </div>
 
 <p align="center">
-  <img width="640" height="480" alt="cowork" src="https://github.com/user-attachments/assets/048761b8-aa77-4506-9c4d-32e2fdecbb60" />
+  <img width="640" height="480" alt="MindsHub 智能体工作空间" src="https://github.com/user-attachments/assets/048761b8-aa77-4506-9c4d-32e2fdecbb60" />
 </p>
 
-**MindsHub Cowork** 是一个统一工作空间,你可以在这里委托完整的项目——应用、网站、调研、分析、报告、定时运维——并获得可直接分享的成品结果。连接你的数据,将工作路由到任意模型(开源或商用),运行开源智能体,并将其产出转化为可发布的网页应用。它是开源的,可以运行在任何地方——你的电脑、你的 VPC,或托管应用中。
+MindsHub 让你自由选择模型和服务提供方，无需受限于单一生态系统。你可以在其智能体工作空间中开展研究、分析、内容创作和软件开发。它是开源的，可以运行在你的电脑、VPC 中，也可以通过托管应用使用。
 
 本仓库是**平台超级项目(superproject)**:它整合了桌面/网页应用、智能体后端和数据引擎,让你可以从源码构建并运行整套技术栈。
+
+如果你希望通过一个 API 为智能体和产品集成智能能力，请参阅 **[MindsHub Inference](https://mindshub.ai/unified-inference)**。它支持选择不同的模型和服务提供方，并通过同一套管理工具统一管理和计费。
 
 ## 快速开始
 
@@ -116,7 +118,7 @@ cp dev.env.example dev.env      # 然后设置 REF=feat/my-thing(或按模块设
 
 ## 随处部署
 
-Cowork 的设计支持灵活部署——**云端、VPC、本地部署、离线隔离环境以及混合基础设施**——让你完全掌控自己的基础设施、模型、权限与数据。
+MindsHub 的设计支持灵活部署——**云端、VPC、本地部署、离线隔离环境以及混合基础设施**——让你完全掌控自己的基础设施、模型、权限与数据。
 
 ## 帮助与支持
 
@@ -127,7 +129,7 @@ Cowork 的设计支持灵活部署——**云端、VPC、本地部署、离线�
 
 ## 🤝 参与贡献
 
-Cowork 是开源项目,欢迎任何形式的贡献——代码、集成、文档、Bug 报告与功能建议。阅读[文档](https://docs.mindshub.ai/?utm_source=github&utm_medium=repo-readme&utm_campaign=minds-readme)完成环境搭建,浏览[已有 issue](https://github.com/mindsdb/minds/issues),也欢迎到 [Discord](https://mindshub.ai/discord) 打个招呼。
+MindsHub 是开源项目,欢迎任何形式的贡献——代码、集成、文档、Bug 报告与功能建议。阅读[文档](https://docs.mindshub.ai/?utm_source=github&utm_medium=repo-readme&utm_campaign=minds-readme)完成环境搭建,浏览[已有 issue](https://github.com/mindsdb/minds/issues),也欢迎到 [Discord](https://mindshub.ai/discord) 打个招呼。
 
 ## 🔒 安全
 

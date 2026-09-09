@@ -2,11 +2,13 @@
 
 <div align="center">
 
-# MindsHub 
+<a href="https://mindshub.ai/?utm_source=github&utm_medium=repo-readme&utm_campaign=minds-readme">
+  <img src="assets/mindshub-banner.svg" alt="MindsHub — The best intelligence should be open." width="100%" />
+</a>
 
-**The unified workspace where open-source models get things done for you.**
+# MindsHub
 
-_Make AI do actual work. Swap the model anytime — keep everything you've built._
+**An agent workspace for completing knowledge work and developing software, with open-source agent harnesses and a choice of models.**
 
 [![Release](https://img.shields.io/github/v/release/mindsdb/minds?logo=github&label=release)](https://github.com/mindsdb/minds/releases)
 [![Stars](https://img.shields.io/github/stars/mindsdb/minds?logo=github)](https://github.com/mindsdb/minds/stargazers)
@@ -32,9 +34,11 @@ _Make AI do actual work. Swap the model anytime — keep everything you've built
 
 </p>
 
-**MindsHub Cowork** is the unified workspace where you delegate entire projects — apps, websites, research, analysis, reporting, scheduled operations — and collect finished, shareable results. Connect your data, route work to any model (open or proprietary), run open-source agents, and turn their output into web applications you can publish. It's open source and runs anywhere — your machine, your VPC, or the hosted app.
+MindsHub gives you the freedom to choose among models and providers instead of being locked into one ecosystem. Use its agent workspace for research, analysis, content creation, and software development. It is open source and can run on your machine, in your VPC, or through the hosted app.
 
 This repository is the **platform superproject**: it pulls together the desktop/web app, the agent backend, and the data engine so you can build and run the whole stack from source.
+
+For building intelligence into agents and products through one API, see **[MindsHub Inference](https://mindshub.ai/unified-inference)**. It provides a choice of models and providers with one set of controls and one bill.
 
 ## Get started
 
@@ -119,7 +123,7 @@ Submodules are configured with `ignore = all`, so your branch work never shows u
 
 ## Deploy anywhere
 
-Cowork is built for flexible deployment — **cloud, VPC, on-prem, air-gapped, and hybrid** infrastructure — so you keep full control over your infrastructure, models, permissions, and data.
+MindsHub is built for flexible deployment — **cloud, VPC, on-prem, air-gapped, and hybrid** infrastructure — so you keep full control over your infrastructure, models, permissions, and data.
 
 ## Help & support
 
@@ -130,7 +134,7 @@ Cowork is built for flexible deployment — **cloud, VPC, on-prem, air-gapped, a
 
 ## 🤝 Contribute
 
-Cowork is open source and contributions are welcome — code, integrations, docs, bug reports, and feature ideas. Read the [docs](https://docs.mindshub.ai/?utm_source=github&utm_medium=repo-readme&utm_campaign=minds-readme) to get set up, browse [open issues](https://github.com/mindsdb/minds/issues), and say hi on [Discord](https://mindshub.ai/discord).
+MindsHub is open source and contributions are welcome — code, integrations, docs, bug reports, and feature ideas. Read the [docs](https://docs.mindshub.ai/?utm_source=github&utm_medium=repo-readme&utm_campaign=minds-readme) to get set up, browse [open issues](https://github.com/mindsdb/minds/issues), and say hi on [Discord](https://mindshub.ai/discord).
 
 ## 🔒 Security
 

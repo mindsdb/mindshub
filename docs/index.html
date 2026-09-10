@@ -196,7 +196,6 @@
     margin-bottom: 72px;
   }
   @media (min-width: 640px) { .cards { grid-template-columns: 1fr 1fr; } }
-  @media (min-width: 900px) { .cards { grid-template-columns: repeat(3, 1fr); } }
 
   .card {
     position: relative;
@@ -342,14 +341,13 @@
     <a href="/" class="nav-up">&larr; All docs</a>
     <div class="brand">
       <div class="brand-dot"></div>
-      MindsHub Cowork
+      MindsHub Agents
     </div>
     <div class="nav-links">
       <a href="index.html" class="active">Docs</a>
-      <a href="setup.html">Setup</a>
-      <a href="use-cases.html">Use Cases</a>
-      <a href="api.html">API</a>
-      <a href="https://docs.mindshub.ai/inference/">Hosted API</a>
+      <a href="setup.html">Cowork-App</a>
+      <a href="api.html">Agents API</a>
+      <a href="https://docs.mindshub.ai/inference/">Inference API</a>
       <a href="https://github.com/mindsdb/mindshub">GitHub ↗</a>
     </div>
     <button class="hamburger" aria-label="Toggle menu">
@@ -360,18 +358,17 @@
 
 <div class="api-banner">
   <div class="api-banner-inner">
-    <span class="api-banner-tag">Hosted API</span>
+    <span class="api-banner-tag">Inference API</span>
     <span class="api-banner-text">
-      These pages document MindsHub Cowork, the app and local server you run yourself.
-      For the hosted MindsHub API at api.mindshub.ai, with API keys, see the
-      <a href="https://docs.mindshub.ai/inference/" target="_blank" rel="noopener">hosted MindsHub API docs ↗</a>.
+      For the MindsHub Model-Router API, see the
+      <a href="https://docs.mindshub.ai/inference/" target="_blank" rel="noopener">Inference API docs ↗</a>.
     </span>
   </div>
 </div>
 
 <div class="hero-wrap">
   <div class="eyebrow">Documentation</div>
-  <h1>Build and automate<br>with <span>MindsHub Cowork</span></h1>
+  <h1>Build and automate<br>with <span>MindsHub Agents</span></h1>
   <p class="lede">
     A general-purpose AI platform for knowledge workers. Automate recurring tasks,
     create artifacts, and deploy anywhere — on your terms.
@@ -382,24 +379,16 @@
       <a href="setup.html" class="card-cover"></a>
       <div class="card-icon">⚡</div>
       <div class="card-tag">Guide</div>
-      <h3>Get Started</h3>
-      <p>Clone, install dependencies, and run the desktop or web app in under five minutes.</p>
+      <h3>Agent Apps</h3>
+      <p>Clone, install and run MindsHub Cowork (desktop or web) in under five minutes.</p>
       <a href="setup.html" class="card-link">Setup guide →</a>
-    </div>
-    <div class="card">
-      <a href="use-cases.html" class="card-cover"></a>
-      <div class="card-icon">◈</div>
-      <div class="card-tag">Examples</div>
-      <h3>Use Cases</h3>
-      <p>See what creators, operators, and strategists are building with the platform.</p>
-      <a href="use-cases.html" class="card-link">Explore examples →</a>
     </div>
     <div class="card">
       <a href="api.html" class="card-cover"></a>
       <div class="card-icon">⬡</div>
       <div class="card-tag">Reference</div>
-      <h3>API</h3>
-      <p>REST endpoints for conversations, projects, artifacts, schedules, connectors, and more.</p>
+      <h3>Agents API</h3>
+      <p>Send tasks to agents over REST — projects, artifacts, schedules, connectors, and more. Runs local or hosted.</p>
       <a href="api.html" class="card-link">API reference →</a>
     </div>
   </div>
@@ -417,7 +406,7 @@
     <div class="arch-pill">
       <a class="pill-cover" href="api.html"></a>
       <div class="pill-name">backend / core_api</div>
-      <div class="pill-desc">FastAPI server. Conversations, projects, artifacts, schedules, connectors.</div>
+      <div class="pill-desc">FastAPI server. Tasks, projects, artifacts, schedules, connectors.</div>
       <div class="pill-repo"><a href="https://github.com/mindsdb/cowork-server" target="_blank">github.com/mindsdb/cowork-server ↗</a></div>
     </div>
     <div class="arch-pill">

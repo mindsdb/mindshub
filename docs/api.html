@@ -2,21 +2,21 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>API Reference — MindsHub Cowork Docs</title>
+<title>Agents API Reference — MindsHub Cowork Docs</title>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<meta name="description" content="REST API reference for MindsHub Cowork. Endpoints for conversations, projects, artifacts, schedules, files, connectors, memories, skills, and scratchpads." />
-<meta name="keywords" content="MindsHub Cowork API, REST API, AI agent API, conversations API, projects API, artifacts API, schedules API, connectors API" />
+<meta name="description" content="Agents API reference for MindsHub Cowork — send tasks to agents over REST. Endpoints for tasks, projects, artifacts, schedules, files, connectors, memories, skills, and scratchpads. Runs local or hosted." />
+<meta name="keywords" content="MindsHub Cowork API, Agents API, REST API, AI agent API, tasks API, projects API, artifacts API, schedules API, connectors API" />
 <meta name="robots" content="index, follow" />
 <meta name="author" content="MindsHub" />
-<meta property="og:title" content="API Reference — MindsHub Cowork" />
-<meta property="og:description" content="REST API reference for MindsHub Cowork. Endpoints for conversations, projects, artifacts, schedules, files, connectors, memories, skills, and scratchpads." />
+<meta property="og:title" content="Agents API — MindsHub Cowork" />
+<meta property="og:description" content="Agents API reference for MindsHub Cowork — send tasks to agents over REST. Endpoints for tasks, projects, artifacts, schedules, files, connectors, memories, skills, and scratchpads. Runs local or hosted." />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="MindsHub Cowork" />
 <meta property="og:image" content="favicon.png" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:site" content="@MindsDB" />
-<meta name="twitter:title" content="API Reference — MindsHub Cowork" />
-<meta name="twitter:description" content="REST API reference for MindsHub Cowork. Endpoints for conversations, projects, artifacts, schedules, files, connectors, memories, skills, and scratchpads." />
+<meta name="twitter:title" content="Agents API — MindsHub Cowork" />
+<meta name="twitter:description" content="Agents API reference for MindsHub Cowork — send tasks to agents over REST. Endpoints for tasks, projects, artifacts, schedules, files, connectors, memories, skills, and scratchpads. Runs local or hosted." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -132,30 +132,17 @@
   .api-banner-text { flex: 1; min-width: 240px; }
   .api-banner-text a { font-weight: 500; }
 
-  /* ── Local server note ── */
-  .local-note {
-    background: var(--accent-bg);
-    border: 1px solid rgba(34,211,238,0.30);
-    border-left: 3px solid var(--accent);
-    border-radius: var(--r-lg);
-    padding: 18px 20px;
-    margin-bottom: 44px;
-  }
-  .local-note .ln-head {
-    font-family: var(--font-mono);
-    font-size: 11px; font-weight: 600;
-    letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 10px;
-  }
-  .local-note p { font-size: 13.5px; line-height: 1.6; color: var(--ink-2); }
-  .local-note p + p { margin-top: 10px; }
-
-  .shell { max-width: 1100px; margin: 0 auto; padding: 64px 24px 120px; display: grid; grid-template-columns: 220px 1fr; gap: 0; align-items: start; }
+  .shell { max-width: 1280px; margin: 0 auto; padding: 64px 24px 120px; display: grid; grid-template-columns: 220px 1fr; gap: 0; align-items: start; }
   @media (max-width: 768px) { .shell { grid-template-columns: 1fr; } }
 
   .sidebar { padding-right: 40px; padding-top: 4px; position: sticky; top: 72px; }
   @media (max-width: 768px) { .sidebar { display: none; } }
+
+  /* ── Per-endpoint two-column layout: params/explanation left, curl+schema right ── */
+  .endpoint-cols { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.15fr); gap: 28px; align-items: start; }
+  @media (max-width: 900px) { .endpoint-cols { grid-template-columns: 1fr; gap: 0; } }
+  .endpoint-example .code-block:first-child { margin-top: 0; }
+  .endpoint-example .schema-label:first-child { margin-top: 0; }
   .sidebar-label { font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 12px; }
   .sidebar ul { list-style: none; display: flex; flex-direction: column; gap: 2px; }
   .sidebar li a { font-size: 13px; color: var(--ink-3); display: block; padding: 4px 10px; border-left: 2px solid transparent; border-radius: 0 var(--r) var(--r) 0; transition: color 120ms, border-color 120ms; }
@@ -174,15 +161,38 @@
     border: 1px solid var(--line);
     border-radius: var(--r-lg);
     padding: 14px 18px;
-    display: flex; align-items: center; gap: 12px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
     margin-bottom: 48px;
     font-family: var(--font-mono); font-size: 13px;
+    position: sticky; top: 64px; z-index: 35;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
   }
   .base-url .burl-label {
     font-size: 10.5px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
     color: var(--ink-4); white-space: nowrap;
   }
   .base-url .burl-val { color: var(--accent); }
+  .burl-toggle { display: flex; gap: 2px; background: var(--surface-3); border: 1px solid var(--line-2); border-radius: var(--r); padding: 2px; }
+  .burl-opt {
+    font-family: var(--font-mono); font-size: 10.5px; font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--ink-4); background: none; border: none; border-radius: 4px;
+    padding: 3px 10px; cursor: pointer; transition: color 120ms, background 120ms;
+  }
+  .burl-opt:hover { color: var(--ink-2); }
+  .burl-opt.active { color: #080d18; background: var(--accent); }
+  .burl-key {
+    margin-left: auto;
+    font-family: var(--font-mono); font-size: 10.5px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: #080d18; background: var(--accent);
+    border-radius: var(--r); padding: 6px 12px;
+    white-space: nowrap;
+    transition: opacity 120ms;
+  }
+  .burl-key:hover { opacity: 0.85; }
+  .burl-key[hidden] { display: none; }
+  .burl-auth-line[hidden] { display: none; }
 
   /* ── Section ── */
   .api-section { margin-bottom: 56px; scroll-margin-top: 80px; }
@@ -221,8 +231,17 @@
   .endpoint-body p { font-size: 13.5px; color: var(--ink-3); margin: 14px 0 10px; }
 
   pre { font-family: var(--font-mono); font-size: 12.5px; line-height: 1.65; color: var(--ink-2); overflow-x: auto; tab-size: 2; }
-  .code-block { background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; margin: 10px 0; }
-  .code-header { padding: 8px 14px; border-bottom: 1px solid var(--line); display: flex; align-items: center; }
+  .code-block { background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; margin: 5px 0 10px; }
+  .code-header { padding: 8px 14px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
+  .copy-btn {
+    font-family: var(--font-mono); font-size: 9.5px; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--ink-4); background: none; border: 1px solid var(--line-2);
+    border-radius: var(--r); padding: 2px 8px; cursor: pointer;
+    transition: color 120ms, border-color 120ms;
+  }
+  .copy-btn:hover { color: var(--ink-2); border-color: var(--ink-4); opacity: 1; }
+  .copy-btn.copied { color: var(--accent); border-color: rgba(34,211,238,0.4); }
   .code-lang { font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-4); }
   .code-block pre { padding: 14px 16px; }
   .hl { color: var(--accent); }
@@ -243,8 +262,9 @@
   .params-table tr:not(:last-child) td { border-bottom: 1px solid var(--line); }
   .params-table td { padding: 7px 0; vertical-align: top; }
   .p-name { font-family: var(--font-mono); color: var(--accent); font-size: 12px; padding-right: 16px; white-space: nowrap; width: 1%; }
-  .p-type { font-family: var(--font-mono); color: var(--ink-4); font-size: 11px; padding-right: 16px; white-space: nowrap; width: 1%; }
-  .p-req { font-family: var(--font-mono); font-size: 10px; padding-right: 16px; white-space: nowrap; width: 1%; }
+  .p-meta { padding-right: 16px; white-space: nowrap; width: 1%; }
+  .p-type { display: block; font-family: var(--font-mono); color: var(--ink-4); font-size: 11px; }
+  .p-req { display: block; font-family: var(--font-mono); font-size: 10px; margin-top: 2px; }
   .p-req.req { color: var(--method-post); }
   .p-req.opt { color: var(--ink-4); }
   .p-desc { font-size: 12.5px; color: var(--ink-3); }
@@ -275,13 +295,12 @@
          menu, and the only way out of this documentation set should not be
          hidden behind a hamburger. -->
     <a href="/" class="nav-up">&larr; All docs</a>
-    <div class="brand"><div class="brand-dot"></div>MindsHub Cowork</div>
+    <div class="brand"><div class="brand-dot"></div>MindsHub Agents</div>
     <div class="nav-links">
       <a href="index.html">Docs</a>
-      <a href="setup.html">Setup</a>
-      <a href="use-cases.html">Use Cases</a>
-      <a href="api.html" class="active">API</a>
-      <a href="https://docs.mindshub.ai/inference/">Hosted API</a>
+      <a href="setup.html">Cowork-App</a>
+      <a href="api.html" class="active">Agents API</a>
+      <a href="https://docs.mindshub.ai/inference/">Inference API</a>
       <a href="https://github.com/mindsdb/mindshub">GitHub ↗</a>
     </div>
     <button class="hamburger" aria-label="Toggle menu">
@@ -292,11 +311,10 @@
 
 <div class="api-banner">
   <div class="api-banner-inner">
-    <span class="api-banner-tag">Hosted API</span>
+    <span class="api-banner-tag">Inference API</span>
     <span class="api-banner-text">
-      These pages document MindsHub Cowork, the app and local server you run yourself.
-      For the hosted MindsHub API at api.mindshub.ai, with API keys, see the
-      <a href="https://docs.mindshub.ai/inference/" target="_blank" rel="noopener">hosted MindsHub API docs ↗</a>.
+      For the MindsHub Model-Router API, see the
+      <a href="https://docs.mindshub.ai/inference/" target="_blank" rel="noopener">Inference API docs ↗</a>.
     </span>
   </div>
 </div>
@@ -306,8 +324,7 @@
     <div class="sidebar-label">Endpoints</div>
     <ul>
       <li><a href="#overview">Overview</a></li>
-      <li><a href="#responses">Responses</a></li>
-      <li><a href="#conversations">Conversations</a></li>
+      <li><a href="#tasks">Tasks</a></li>
       <li><a href="#projects">Projects</a></li>
       <li><a href="#artifacts">Artifacts</a></li>
       <li><a href="#schedules">Schedules</a></li>
@@ -322,234 +339,176 @@
 
   <main class="content">
     <div class="eyebrow">API Reference</div>
-    <h1 id="overview">REST API</h1>
+    <h1 id="overview">Agents API</h1>
     <p class="lede">
-      The Cowork server exposes a versioned REST API at <code>/api/v1</code>.
-      All endpoints return JSON.
+      Launch agents to perform all kinds of tasks programmatically. These agents can run
+      on our cloud, or anywhere you choose by installing the open-source Cowork server.
     </p>
 
-    <div class="local-note">
-      <div class="ln-head">This page documents the local Cowork server</div>
-      <p>
-        Every endpoint below belongs to the Cowork server that runs on your own machine, at
-        <code>http://localhost:26866/api/v1</code>. It takes no API key and it is not reachable
-        over the internet.
-      </p>
-      <p>
-        The hosted MindsHub API is a different service. It runs at <code>api.mindshub.ai</code>,
-        it needs an API key, and it is documented separately:
-        <a href="https://docs.mindshub.ai/inference/" target="_blank" rel="noopener">hosted MindsHub API docs ↗</a>.
-      </p>
+    <div class="base-url">
+      <span class="burl-label">Base URL</span>
+      <div class="burl-toggle" role="group" aria-label="Choose base URL">
+        <button type="button" class="burl-opt active" data-base="hosted">MindsHub Cloud</button>
+        <button type="button" class="burl-opt" data-base="local">Your Server</button>
+      </div>
+      <span class="burl-val burl-base">https://cowork.mindshub.ai/api/v1</span>
+      <a href="https://console.mindshub.ai/apiKeys" target="_blank" rel="noopener" class="burl-key">Get API Key</a>
     </div>
 
     <!-- ERD -->
     <div class="erd-wrap">
-      <svg viewBox="0 0 760 360" xmlns="http://www.w3.org/2000/svg" aria-label="Resource relationship diagram" style="width:100%;height:auto;display:block">
+      <svg viewBox="0 0 760 272" xmlns="http://www.w3.org/2000/svg" aria-label="Resource relationship diagram" style="width:100%;height:auto;display:block">
         <defs>
           <marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
             <path d="M1.5,1.5 L7,4.5 L1.5,7.5" stroke="#3A4F6E" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-          </marker>
-          <marker id="ah-d" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
-            <path d="M1.5,1.5 L7,4.5 L1.5,7.5" stroke="#2A3957" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
           </marker>
         </defs>
 
         <!-- ── Relationship lines (drawn behind boxes) ── -->
 
-        <!-- Project → Conversations -->
-        <path d="M 350,60 C 350,95 89,95 89,130" stroke="#2A3957" stroke-width="1.5" fill="none" marker-end="url(#ah)"/>
-        <text x="80" y="127" font-family="'JetBrains Mono',monospace" font-size="9" fill="#3A4F6E">N</text>
+        <!-- Project ↔ Task, side by side: Project owns N tasks -->
+        <line x1="270" y1="48" x2="310" y2="48" stroke="#2A3957" stroke-width="1.5" marker-end="url(#ah)"/>
+        <text x="276" y="42" font-family="'JetBrains Mono',monospace" font-size="9" fill="#3A4F6E">1</text>
+        <text x="296" y="42" font-family="'JetBrains Mono',monospace" font-size="9" fill="#3A4F6E">N</text>
 
         <!-- Project → Artifacts -->
-        <path d="M 350,60 C 350,95 260,95 260,130" stroke="#2A3957" stroke-width="1.5" fill="none" marker-end="url(#ah)"/>
-        <text x="251" y="127" font-family="'JetBrains Mono',monospace" font-size="9" fill="#3A4F6E">N</text>
+        <path d="M 170,76 C 170,115 150,115 150,150" stroke="#2A3957" stroke-width="1.5" fill="none" marker-end="url(#ah)"/>
+        <text x="158" y="140" font-family="'JetBrains Mono',monospace" font-size="9" fill="#3A4F6E">N</text>
 
-        <!-- Project → Schedules -->
-        <path d="M 350,60 C 350,95 415,95 415,130" stroke="#2A3957" stroke-width="1.5" fill="none" marker-end="url(#ah)"/>
-        <text x="407" y="127" font-family="'JetBrains Mono',monospace" font-size="9" fill="#3A4F6E">N</text>
+        <!-- Task → Artifacts (solid — a task's own artifacts, not just optional) -->
+        <path d="M 355,76 C 300,120 210,120 155,150" stroke="#2A3957" stroke-width="1.8" fill="none" marker-end="url(#ah)"/>
+        <text x="245" y="118" font-family="'JetBrains Mono',monospace" font-size="9" fill="#3A4F6E">N</text>
 
-        <!-- Project → File (routes right of Schedules) -->
-        <path d="M 430,60 C 550,60 550,200 415,215" stroke="#2A3957" stroke-width="1.5" fill="none" marker-end="url(#ah)"/>
-        <text x="548" y="140" font-family="'JetBrains Mono',monospace" font-size="9" fill="#3A4F6E">N</text>
-
-        <!-- Conversation → File (optional, dashed) -->
-        <path d="M 89,186 C 89,215 415,211 415,215" stroke="#1E2A44" stroke-width="1.2" stroke-dasharray="5,3" fill="none" marker-end="url(#ah-d)"/>
-
-        <!-- "1" near Project bottom -->
-        <text x="356" y="75" font-family="'JetBrains Mono',monospace" font-size="9" fill="#3A4F6E">1</text>
-
-        <!-- Conversations → Responses -->
-        <path d="M 89,186 C 89,225 70,225 70,265" stroke="#2A3957" stroke-width="1.5" fill="none" marker-end="url(#ah)"/>
-        <text x="95" y="230" font-family="'JetBrains Mono',monospace" font-size="9" fill="#3A4F6E">N</text>
-        <text x="95" y="172" font-family="'JetBrains Mono',monospace" font-size="9" fill="#3A4F6E">1</text>
-
-        <!-- Conversations → Scratchpads -->
-        <path d="M 168,162 C 220,162 220,265 210,265" stroke="#2A3957" stroke-width="1.5" fill="none" marker-end="url(#ah)"/>
-        <text x="228" y="261" font-family="'JetBrains Mono',monospace" font-size="9" fill="#3A4F6E">N</text>
-
-        <!-- Scratchpad → Cells -->
-        <path d="M 278,288 C 320,288 320,303 330,310" stroke="#2A3957" stroke-width="1.5" fill="none" marker-end="url(#ah)"/>
-        <text x="340" y="306" font-family="'JetBrains Mono',monospace" font-size="9" fill="#3A4F6E">N</text>
-
-        <!-- Schedules → triggers → Conversations (dashed) -->
-        <path d="M 355,153 C 295,153 228,162 168,162" stroke="#1E2A44" stroke-width="1.2" stroke-dasharray="5,3" fill="none" marker-end="url(#ah-d)"/>
-        <text x="268" y="147" font-family="'JetBrains Mono',monospace" font-size="9" fill="#5C6B85" text-anchor="middle">triggers</text>
-
-        <!-- Project — Connectors (dashed, usable within) -->
-        <line x1="430" y1="37" x2="590" y2="37" stroke="#1E2A44" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#ah-d)"/>
-
-        <!-- Project → Memory (optional, dashed 0..N) -->
-        <path d="M 430,60 C 490,60 490,101 590,101" stroke="#1E2A44" stroke-width="1.2" stroke-dasharray="5,3" fill="none" marker-end="url(#ah-d)"/>
-        <text x="510" y="76" font-family="'JetBrains Mono',monospace" font-size="9" fill="#3A465E" text-anchor="middle">0..N</text>
+        <!-- Task → Scratchpad -->
+        <path d="M 385,76 C 385,115 355,115 355,150" stroke="#2A3957" stroke-width="1.5" fill="none" marker-end="url(#ah)"/>
+        <text x="365" y="112" font-family="'JetBrains Mono',monospace" font-size="9" fill="#3A4F6E">N</text>
 
         <!-- ── Entity boxes ── -->
 
-        <!-- Project (accent border) -->
+        <!-- Project (plain border, no glow — Task is the main block now) -->
         <a href="#projects">
-          <rect x="270" y="14" width="160" height="46" rx="8" fill="#0A1420" stroke="rgba(34,211,238,0.18)" stroke-width="9"/>
-          <rect x="270" y="14" width="160" height="46" rx="8" fill="#0E1626" stroke="#22D3EE" stroke-width="1.5"/>
-          <text x="350" y="35" text-anchor="middle" font-family="'Inter',sans-serif" font-size="13" font-weight="700" fill="#F2F6FF" letter-spacing="0.2">Project</text>
-          <text x="350" y="51" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#5C6B85">central workspace</text>
+          <rect x="120" y="20" width="150" height="56" rx="8" fill="#0E1626" stroke="#1E2A44" stroke-width="1.5"/>
+          <text x="195" y="44" text-anchor="middle" font-family="'Inter',sans-serif" font-size="13" font-weight="700" fill="#F2F6FF" letter-spacing="0.2">Project</text>
+          <text x="195" y="61" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#5C6B85">agent workspace</text>
         </a>
 
-        <!-- Connectors (dashed border = independent) -->
-        <a href="#connectors">
-          <rect x="590" y="14" width="148" height="46" rx="8" fill="#0E1626" stroke="#2A3957" stroke-width="1.5" stroke-dasharray="5,3"/>
-          <text x="664" y="35" text-anchor="middle" font-family="'Inter',sans-serif" font-size="13" font-weight="600" fill="#8A97AE">Connector</text>
-          <text x="664" y="51" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#3A465E">independent</text>
+        <!-- Task / Conversation — the main block, accent glow -->
+        <a href="#tasks">
+          <rect x="310" y="20" width="150" height="56" rx="8" fill="#0A1420" stroke="rgba(34,211,238,0.18)" stroke-width="9"/>
+          <rect x="310" y="20" width="150" height="56" rx="8" fill="#0E1626" stroke="#22D3EE" stroke-width="1.5"/>
+          <text x="385" y="44" text-anchor="middle" font-family="'Inter',sans-serif" font-size="13" font-weight="700" fill="#F2F6FF" letter-spacing="0.2">Task</text>
+          <text x="385" y="61" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#5C6B85">agent task scope of work</text>
         </a>
 
-        <!-- Conversations / Tasks -->
-        <a href="#conversations">
-          <rect x="10" y="130" width="158" height="56" rx="8" fill="#0E1626" stroke="#1E2A44" stroke-width="1.5"/>
-          <text x="89" y="152" text-anchor="middle" font-family="'Inter',sans-serif" font-size="13" font-weight="600" fill="#F2F6FF">Conversation</text>
-          <rect x="19" y="159" width="50" height="17" rx="4" fill="rgba(34,211,238,0.12)" stroke="rgba(34,211,238,0.28)" stroke-width="1"/>
-          <text x="44" y="171" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" font-weight="600" fill="#22D3EE">= Task</text>
-        </a>
-
-        <!-- Artifacts -->
+        <!-- Artifacts — belong to a project, and to the task that created them -->
         <a href="#artifacts">
-          <rect x="195" y="130" width="130" height="56" rx="8" fill="#0E1626" stroke="#1E2A44" stroke-width="1.5"/>
-          <text x="260" y="152" text-anchor="middle" font-family="'Inter',sans-serif" font-size="13" font-weight="600" fill="#F2F6FF">Artifact</text>
-          <rect x="204" y="159" width="62" height="17" rx="4" fill="rgba(196,181,253,0.12)" stroke="rgba(196,181,253,0.28)" stroke-width="1"/>
-          <text x="235" y="171" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" font-weight="600" fill="#C4B5FD">mini app</text>
+          <rect x="75" y="150" width="150" height="56" rx="8" fill="#0E1626" stroke="#1E2A44" stroke-width="1.5"/>
+          <text x="150" y="172" text-anchor="middle" font-family="'Inter',sans-serif" font-size="13" font-weight="600" fill="#F2F6FF">Artifacts</text>
+          <text x="150" y="191" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#5C6B85">agent task outputs</text>
+        </a>
+        <a href="#artifacts">
+          <rect x="70" y="212" width="160" height="17" rx="8.5" fill="rgba(196,181,253,0.12)" stroke="rgba(196,181,253,0.28)" stroke-width="1"/>
+          <text x="150" y="224" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" font-weight="600" fill="#C4B5FD">apps, presentations, documents</text>
         </a>
 
-        <!-- Schedules -->
-        <a href="#schedules">
-          <rect x="355" y="130" width="120" height="46" rx="8" fill="#0E1626" stroke="#1E2A44" stroke-width="1.5"/>
-          <text x="415" y="157" text-anchor="middle" font-family="'Inter',sans-serif" font-size="13" font-weight="600" fill="#F2F6FF">Schedule</text>
-        </a>
-
-        <!-- Files (below Schedule) -->
-        <a href="#files">
-          <rect x="370" y="215" width="90" height="46" rx="8" fill="#0E1626" stroke="#1E2A44" stroke-width="1.5"/>
-          <text x="415" y="242" text-anchor="middle" font-family="'Inter',sans-serif" font-size="13" font-weight="600" fill="#F2F6FF">File</text>
-        </a>
-
-        <!-- Responses -->
-        <a href="#responses">
-          <rect x="10" y="265" width="120" height="46" rx="8" fill="#0E1626" stroke="#1E2A44" stroke-width="1.5"/>
-          <text x="70" y="292" text-anchor="middle" font-family="'Inter',sans-serif" font-size="13" font-weight="600" fill="#F2F6FF">Response</text>
-        </a>
-
-        <!-- Scratchpads (conversation-scoped) -->
+        <!-- Scratchpad (task-scoped), same level as Artifacts -->
         <a href="#scratchpads">
-          <rect x="148" y="265" width="130" height="46" rx="8" fill="#0E1626" stroke="#1E2A44" stroke-width="1.5"/>
-          <text x="213" y="286" text-anchor="middle" font-family="'Inter',sans-serif" font-size="13" font-weight="600" fill="#F2F6FF">Scratchpad</text>
-          <text x="213" y="302" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#5C6B85">ephemeral draft</text>
+          <rect x="260" y="150" width="190" height="56" rx="8" fill="#0E1626" stroke="#1E2A44" stroke-width="1.5"/>
+          <text x="355" y="172" text-anchor="middle" font-family="'Inter',sans-serif" font-size="13" font-weight="600" fill="#F2F6FF">Scratchpad</text>
+          <text x="355" y="191" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#5C6B85">agent coding execution environment</text>
         </a>
 
-        <!-- Cell (scratchpad-scoped) -->
-        <a href="#scratchpads">
-          <rect x="330" y="298" width="90" height="46" rx="8" fill="#0E1626" stroke="#1E2A44" stroke-width="1.5"/>
-          <text x="375" y="319" text-anchor="middle" font-family="'Inter',sans-serif" font-size="13" font-weight="600" fill="#F2F6FF">Cell</text>
-          <text x="375" y="335" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#5C6B85">code · md · output</text>
+        <!-- ── Agent Task Resources group (Connectors, Memories, Skills, Files) ── -->
+        <rect x="576" y="8" width="176" height="254" rx="12" fill="none" stroke="#2A3957" stroke-width="1.2" stroke-dasharray="5,4"/>
+        <rect x="592" y="1" width="144" height="14" rx="3" fill="#0C1522" stroke="#1E2A44" stroke-width="0.75"/>
+        <text x="664" y="11.5" font-family="'JetBrains Mono',monospace" font-size="7.5" fill="#5C6B85" text-anchor="middle">Agent Task Resources</text>
+
+        <!-- Connectors (dashed border = independent, usable within any project) -->
+        <a href="#connectors">
+          <rect x="590" y="20" width="148" height="46" rx="8" fill="#0E1626" stroke="#2A3957" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <text x="664" y="41" text-anchor="middle" font-family="'Inter',sans-serif" font-size="13" font-weight="600" fill="#F2F6FF">Connectors</text>
+          <text x="664" y="57" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#5C6B85">apps and data</text>
         </a>
 
-        <!-- Memory (optional project scope, solid border) -->
+        <!-- Memories (optional project scope, solid border) -->
         <a href="#memories">
-          <rect x="590" y="78" width="148" height="46" rx="8" fill="#0E1626" stroke="#1E2A44" stroke-width="1.5"/>
-          <text x="664" y="99" text-anchor="middle" font-family="'Inter',sans-serif" font-size="13" font-weight="600" fill="#F2F6FF">Memory</text>
-          <text x="664" y="115" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#5C6B85">global or project</text>
+          <rect x="590" y="82" width="148" height="46" rx="8" fill="#0E1626" stroke="#1E2A44" stroke-width="1.5"/>
+          <text x="664" y="103" text-anchor="middle" font-family="'Inter',sans-serif" font-size="13" font-weight="600" fill="#F2F6FF">Memories</text>
+          <text x="664" y="119" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#5C6B85">self learnings storage</text>
         </a>
 
-        <!-- Skills (global, dashed border like Connectors) -->
+        <!-- Skills (global, dashed border = independent, like Connectors) -->
         <a href="#skills">
-          <rect x="590" y="142" width="148" height="46" rx="8" fill="#0E1626" stroke="#2A3957" stroke-width="1.5" stroke-dasharray="5,3"/>
-          <text x="664" y="163" text-anchor="middle" font-family="'Inter',sans-serif" font-size="13" font-weight="600" fill="#8A97AE">Skill</text>
-          <text x="664" y="179" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#3A465E">global</text>
+          <rect x="590" y="144" width="148" height="46" rx="8" fill="#0E1626" stroke="#2A3957" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <text x="664" y="165" text-anchor="middle" font-family="'Inter',sans-serif" font-size="13" font-weight="600" fill="#F2F6FF">Skills</text>
+          <text x="664" y="181" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#5C6B85">global</text>
         </a>
 
-        <!-- "usable within" label — rendered last so it sits above boxes -->
-        <rect x="463" y="18" width="94" height="14" rx="3" fill="#0C1522" stroke="#1E2A44" stroke-width="0.75"/>
-        <text x="510" y="28.5" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#5C6B85" text-anchor="middle">usable within</text>
+        <!-- Files — belongs to a project, and/or to a task -->
+        <a href="#files">
+          <rect x="590" y="206" width="148" height="46" rx="8" fill="#0E1626" stroke="#1E2A44" stroke-width="1.5"/>
+          <text x="664" y="233" text-anchor="middle" font-family="'Inter',sans-serif" font-size="13" font-weight="600" fill="#F2F6FF">Files</text>
+        </a>
 
-        <!-- ── Legend (bottom-right, dotted box) ── -->
-        <rect x="492" y="210" width="250" height="98" rx="6" fill="rgba(8,13,24,0.88)" stroke="#2A3957" stroke-width="1" stroke-dasharray="4,3"/>
-        <text x="502" y="225" font-family="'JetBrains Mono',monospace" font-size="8" font-weight="600" fill="#3A465E" letter-spacing="0.12em">LEGEND</text>
-        <!-- owns 1..N -->
-        <line x1="502" y1="238" x2="522" y2="238" stroke="#2A3957" stroke-width="1.5"/>
-        <path d="M517.5,235.5 L522,238 L517.5,240.5" stroke="#3A4F6E" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-        <text x="528" y="242" font-family="'JetBrains Mono',monospace" font-size="9" fill="#5C6B85">owns  1..N</text>
-        <!-- optional / triggers -->
-        <line x1="502" y1="257" x2="522" y2="257" stroke="#1E2A44" stroke-width="1.2" stroke-dasharray="4,2"/>
-        <path d="M517.5,254.5 L522,257 L517.5,259.5" stroke="#2A3957" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-        <text x="528" y="261" font-family="'JetBrains Mono',monospace" font-size="9" fill="#5C6B85">optional / triggers</text>
-        <!-- independent -->
-        <rect x="502" y="268" width="20" height="14" rx="3" fill="none" stroke="#2A3957" stroke-width="1" stroke-dasharray="3,2"/>
-        <text x="528" y="279" font-family="'JetBrains Mono',monospace" font-size="9" fill="#5C6B85">independent / global</text>
-        <!-- usable within -->
-        <line x1="502" y1="293" x2="522" y2="293" stroke="#1E2A44" stroke-width="1" stroke-dasharray="4,2"/>
-        <text x="528" y="297" font-family="'JetBrains Mono',monospace" font-size="9" fill="#5C6B85">usable within / 0..N</text>
       </svg>
     </div>
 
-    <div class="base-url">
-      <span class="burl-label">Base URL</span>
-      <span class="burl-val">http://localhost:26866/api/v1</span>
-    </div>
+    <p class="section-desc" style="margin-bottom:48px">
+      It's straightforward: agents' work is organized in projects, where agents execute tasks.
+      For an agent to do real work, it needs code execution environments — we call these
+      scratchpads — and the output of a task (apps, reports, documents, and more) is organized
+      as artifacts. Agents also draw on common resources to execute tasks: connectors to apps
+      and data sources, files, memories, and skills.
+    </p>
 
-    <!-- Responses -->
-    <div class="api-section" id="responses">
-      <h2>Responses</h2>
-      <p class="section-desc">Stream AI responses from the agent. Compatible with the OpenAI Responses API shape.</p>
-
-      <p class="schema-label">Response object</p>
-      <div class="code-block" style="margin-bottom:24px">
-        <div class="code-header"><span class="code-lang">json</span></div>
-        <pre>{
-  <span class="hl">"id"</span>:              <span class="st">"resp_abc123"</span>,
-  <span class="hl">"conversation_id"</span>: <span class="st">"conv_xyz"</span>,
-  <span class="hl">"input"</span>:           <span class="st">"Summarise last week's sales data"</span>,
-  <span class="hl">"output"</span>:          [{ <span class="hl">"type"</span>: <span class="st">"text"</span>, <span class="hl">"text"</span>: <span class="st">"Here is the summary..."</span> }],
-  <span class="hl">"status"</span>:          <span class="st">"completed"</span>,  <span class="cm">// "in_progress" | "completed" | "failed"</span>
-  <span class="hl">"model"</span>:           <span class="st">"claude-opus-4-8"</span>,
-  <span class="hl">"usage"</span>:           { <span class="hl">"input_tokens"</span>: <span class="st">120</span>, <span class="hl">"output_tokens"</span>: <span class="st">340</span> },
-  <span class="hl">"created_at"</span>:      <span class="st">"2026-06-11T10:00:00Z"</span>
-}</pre>
-      </div>
+    <!-- Tasks -->
+    <div class="api-section" id="tasks">
+      <h2>Tasks</h2>
+      <p class="section-desc">Manage tasks. Each task holds an ordered list of messages exchanged with the agent. <strong>Tasks and Conversations are the same concept</strong> — every task is a conversation with an assigned agent, and the same objects are available at <code>/tasks</code> and <code>/conversations</code>.</p>
 
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method post">POST</span>
-          <span class="endpoint-path">/responses</span>
-          <span class="endpoint-desc">Create a streaming response</span>
+          <span class="endpoint-path" data-path="/tasks">https://cowork.mindshub.ai/api/v1/tasks</span>
+          <span class="endpoint-desc">Create a task</span>
         </div>
         <div class="endpoint-body">
-          <p class="schema-label">Body</p>
-          <table class="params-table">
-            <tr><td class="p-name">conversation_id</td><td class="p-type">string</td><td class="p-req req">required</td><td class="p-desc">ID of the conversation to append the response to.</td></tr>
-            <tr><td class="p-name">input</td><td class="p-type">string</td><td class="p-req req">required</td><td class="p-desc">User message text.</td></tr>
-            <tr><td class="p-name">stream</td><td class="p-type">boolean</td><td class="p-req opt">optional</td><td class="p-desc">Default <code>true</code>. Return server-sent events. Set to <code>false</code> for a single JSON response.</td></tr>
-            <tr><td class="p-name">model</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Override the agent model for this turn. Defaults to the project setting.</td></tr>
-            <tr><td class="p-name">skill_ids</td><td class="p-type">string[]</td><td class="p-req opt">optional</td><td class="p-desc">Skill IDs to activate for this turn.</td></tr>
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Body</p><table class="params-table">
+            <tr><td class="p-name">topic</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">The task's opening prompt. Also used to auto-generate the title if <code>title</code> is omitted.</td></tr>
+            <tr><td class="p-name">title</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Human-readable name. Falls back to <code>topic</code>, then "Untitled task".</td></tr>
+            <tr><td class="p-name">project</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Project name to attach to. Ignored if <code>project_id</code> is set. Defaults to your account's default project if both are omitted.</td></tr>
+            <tr><td class="p-name">project_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Project ID to attach to.</td></tr>
+            <tr><td class="p-name">harness</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Agent harness to run this task with, overriding the account default (e.g. <code>anton</code>).</td></tr>
+            <tr><td class="p-name">model</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Model override for this task. Persisted, so a reopened task remembers the pick.</td></tr>
           </table>
-          <div class="code-block">
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
             <div class="code-header"><span class="code-lang">curl</span></div>
-            <pre><span class="hl">curl</span> -X POST http://localhost:26866/api/v1/responses \
-  -H <span class="st">"Content-Type: application/json"</span> \
-  -d <span class="st">'{"conversation_id":"conv_xyz","input":"Summarise last week'\''s sales data","stream":true}'</span></pre>
+            <pre><span class="hl">curl</span> -X POST <span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/tasks \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span> \
+  </span>-H <span class="st">"Content-Type: application/json"</span> \
+  -d <span class="st">'{"project_id":"proj_xyz","title":"Q2 analysis","topic":"Analyse Q2 revenue by region"}'</span></pre>
+          </div>
+<p class="schema-label">Response — Task object</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
+  <span class="hl">"id"</span>:               <span class="st">"task_abc123"</span>,
+  <span class="hl">"title"</span>:            <span class="st">"Q2 analysis"</span>,
+  <span class="hl">"preview"</span>:          <span class="st">"Q2 analysis"</span>,
+  <span class="hl">"project"</span>:          <span class="st">"Sales Automation"</span>,
+  <span class="hl">"project_id"</span>:       <span class="st">"proj_xyz"</span>,
+  <span class="hl">"project_path"</span>:     <span class="st">"/Users/you/cowork/sales-automation"</span>,
+  <span class="hl">"harness"</span>:          <span class="st">"anton"</span>,
+  <span class="hl">"model"</span>:            <span class="st">"claude-opus-4-8"</span>,
+  <span class="hl">"reasoning_effort"</span>: <span class="st">null</span>,
+  <span class="hl">"created_at"</span>:       <span class="st">"2026-06-11T10:00:00Z"</span>,
+  <span class="hl">"updated_at"</span>:       <span class="st">"2026-06-11T10:04:12Z"</span>
+}</pre>
+          </div>
+            </div>
           </div>
         </div>
       </div>
@@ -557,86 +516,47 @@
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method get">GET</span>
-          <span class="endpoint-path">/responses/in-flight-list</span>
-          <span class="endpoint-desc">List active streams</span>
+          <span class="endpoint-path" data-path="/tasks">https://cowork.mindshub.ai/api/v1/tasks</span>
+          <span class="endpoint-desc">List tasks</span>
         </div>
         <div class="endpoint-body">
-          <p class="schema-label">Query parameters</p>
-          <table class="params-table">
-            <tr><td class="p-name">conversation_id</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Filter to a specific conversation.</td></tr>
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Query parameters</p><table class="params-table">
+            <tr><td class="p-name">project_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Filter to a specific project.</td></tr>
+            <tr><td class="p-name">project</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Filter by project name instead of ID. Pass <code>all</code> to return tasks across every project.</td></tr>
+            <tr><td class="p-name">limit</td><td class="p-meta"><span class="p-type">integer</span><span class="p-req opt">optional</span></td><td class="p-desc">Max results to return. Default <code>50</code>.</td></tr>
           </table>
-        </div>
-      </div>
-
-      <div class="endpoint">
-        <div class="endpoint-header">
-          <span class="method get">GET</span>
-          <span class="endpoint-path">/responses/in-flight</span>
-          <span class="endpoint-desc">Check a specific in-flight stream</span>
-        </div>
-        <div class="endpoint-body">
-          <p class="schema-label">Query parameters</p>
-          <table class="params-table">
-            <tr><td class="p-name">conversation_id</td><td class="p-type">string</td><td class="p-req req">required</td><td class="p-desc">Conversation whose active stream to retrieve.</td></tr>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- Conversations -->
-    <div class="api-section" id="conversations">
-      <h2>Conversations</h2>
-      <p class="section-desc">Manage conversation threads. Each conversation holds an ordered list of messages. <strong>Conversations and Tasks are the same concept</strong> — every task is a conversation with a goal and an assigned agent. The API uses both terms interchangeably.</p>
-
-      <p class="schema-label">Conversation object</p>
-      <div class="code-block" style="margin-bottom:24px">
-        <div class="code-header"><span class="code-lang">json</span></div>
-        <pre>{
-  <span class="hl">"id"</span>:           <span class="st">"conv_abc123"</span>,
-  <span class="hl">"project_id"</span>:   <span class="st">"proj_xyz"</span>,           <span class="cm">// null if not project-scoped</span>
-  <span class="hl">"title"</span>:        <span class="st">"Q2 analysis"</span>,
-  <span class="hl">"goal"</span>:         <span class="st">"Analyse Q2 revenue by region"</span>,  <span class="cm">// task prompt, optional</span>
-  <span class="hl">"status"</span>:       <span class="st">"active"</span>,             <span class="cm">// "active" | "archived"</span>
-  <span class="hl">"created_at"</span>:   <span class="st">"2026-06-11T10:00:00Z"</span>,
-  <span class="hl">"updated_at"</span>:   <span class="st">"2026-06-11T10:04:12Z"</span>
-}</pre>
-      </div>
-
-      <div class="endpoint">
-        <div class="endpoint-header">
-          <span class="method get">GET</span>
-          <span class="endpoint-path">/conversations</span>
-          <span class="endpoint-desc">List conversations</span>
-        </div>
-        <div class="endpoint-body">
-          <p class="schema-label">Query parameters</p>
-          <table class="params-table">
-            <tr><td class="p-name">project_id</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Filter to a specific project.</td></tr>
-            <tr><td class="p-name">status</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc"><code>active</code> or <code>archived</code>. Returns all if omitted.</td></tr>
-            <tr><td class="p-name">limit</td><td class="p-type">integer</td><td class="p-req opt">optional</td><td class="p-desc">Max results to return. Default <code>50</code>, max <code>200</code>.</td></tr>
-            <tr><td class="p-name">offset</td><td class="p-type">integer</td><td class="p-req opt">optional</td><td class="p-desc">Pagination offset. Default <code>0</code>.</td></tr>
-          </table>
-        </div>
-      </div>
-
-      <div class="endpoint">
-        <div class="endpoint-header">
-          <span class="method post">POST</span>
-          <span class="endpoint-path">/conversations</span>
-          <span class="endpoint-desc">Create a conversation</span>
-        </div>
-        <div class="endpoint-body">
-          <p class="schema-label">Body</p>
-          <table class="params-table">
-            <tr><td class="p-name">project_id</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Attach to a project.</td></tr>
-            <tr><td class="p-name">title</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Human-readable name. Auto-generated from the first message if omitted.</td></tr>
-            <tr><td class="p-name">goal</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Task prompt or goal that frames the conversation for the agent.</td></tr>
-          </table>
-          <div class="code-block">
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
             <div class="code-header"><span class="code-lang">curl</span></div>
-            <pre><span class="hl">curl</span> -X POST http://localhost:26866/api/v1/conversations \
-  -H <span class="st">"Content-Type: application/json"</span> \
-  -d <span class="st">'{"project_id":"proj_xyz","title":"Q2 analysis","goal":"Analyse Q2 revenue by region"}'</span></pre>
+            <pre><span class="hl">curl</span> <span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/tasks \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span> \
+  </span></pre>
+          </div>
+<p class="schema-label">Response — note the key is still <code>conversations</code></p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
+  <span class="hl">"conversations"</span>: [
+    {
+  <span class="hl">"id"</span>:               <span class="st">"task_abc123"</span>,
+  <span class="hl">"title"</span>:            <span class="st">"Q2 analysis"</span>,
+  <span class="hl">"preview"</span>:          <span class="st">"Q2 analysis"</span>,
+  <span class="hl">"project"</span>:          <span class="st">"Sales Automation"</span>,
+  <span class="hl">"project_id"</span>:       <span class="st">"proj_xyz"</span>,
+  <span class="hl">"project_path"</span>:     <span class="st">"/Users/you/cowork/sales-automation"</span>,
+  <span class="hl">"harness"</span>:          <span class="st">"anton"</span>,
+  <span class="hl">"model"</span>:            <span class="st">"claude-opus-4-8"</span>,
+  <span class="hl">"reasoning_effort"</span>: <span class="st">null</span>,
+  <span class="hl">"created_at"</span>:       <span class="st">"2026-06-11T10:00:00Z"</span>,
+  <span class="hl">"updated_at"</span>:       <span class="st">"2026-06-11T10:04:12Z"</span>
+},
+    <span class="cm">// ...</span>
+  ]
+}</pre>
+          </div>
+            </div>
           </div>
         </div>
       </div>
@@ -644,54 +564,429 @@
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method get">GET</span>
-          <span class="endpoint-path">/conversations/{id}</span>
-          <span class="endpoint-desc">Get a conversation</span>
+          <span class="endpoint-path" data-path="/tasks/{id}">https://cowork.mindshub.ai/api/v1/tasks/{id}</span>
+          <span class="endpoint-desc">Get a task</span>
         </div>
         <div class="endpoint-body">
-          <p class="schema-label">Path parameters</p>
-          <table class="params-table">
-            <tr><td class="p-name">id</td><td class="p-type">string</td><td class="p-req req">required</td><td class="p-desc">Conversation ID.</td></tr>
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Path parameters</p><table class="params-table">
+            <tr><td class="p-name">id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Task ID.</td></tr>
           </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/tasks/task_abc123"</span><span class="burl-auth-line"> \
+  -H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+<p class="schema-label">Response — Task object</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
+  <span class="hl">"id"</span>:               <span class="st">"task_abc123"</span>,
+  <span class="hl">"title"</span>:            <span class="st">"Q2 analysis"</span>,
+  <span class="hl">"preview"</span>:          <span class="st">"Q2 analysis"</span>,
+  <span class="hl">"project"</span>:          <span class="st">"Sales Automation"</span>,
+  <span class="hl">"project_id"</span>:       <span class="st">"proj_xyz"</span>,           <span class="cm">// every task belongs to a project — its account default if none was chosen</span>
+  <span class="hl">"project_path"</span>:     <span class="st">"/Users/you/cowork/sales-automation"</span>,
+  <span class="hl">"harness"</span>:          <span class="st">"anton"</span>,               <span class="cm">// null = account default</span>
+  <span class="hl">"model"</span>:            <span class="st">"claude-opus-4-8"</span>,     <span class="cm">// null = account default</span>
+  <span class="hl">"reasoning_effort"</span>: <span class="st">null</span>,
+  <span class="hl">"created_at"</span>:       <span class="st">"2026-06-11T10:00:00Z"</span>,
+  <span class="hl">"updated_at"</span>:       <span class="st">"2026-06-11T10:04:12Z"</span>  <span class="cm">// last message activity, not just renames</span>
+}</pre>
+          </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method patch">PATCH</span>
-          <span class="endpoint-path">/conversations/{id}</span>
-          <span class="endpoint-desc">Update title, goal, or status</span>
+          <span class="endpoint-path" data-path="/tasks/{id}">https://cowork.mindshub.ai/api/v1/tasks/{id}</span>
+          <span class="endpoint-desc">Rename a task, or repoint it to another project</span>
         </div>
         <div class="endpoint-body">
-          <p class="schema-label">Body</p>
-          <table class="params-table">
-            <tr><td class="p-name">title</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">New title.</td></tr>
-            <tr><td class="p-name">goal</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Updated task goal.</td></tr>
-            <tr><td class="p-name">status</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc"><code>active</code> or <code>archived</code>.</td></tr>
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p>Moving via <code>project</code>/<code>project_id</code> here only repoints the task — it does not relocate the artifacts it created. Use <code>POST /tasks/{id}/move</code> for that.</p><p class="schema-label">Body</p><table class="params-table">
+            <tr><td class="p-name">title</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">New title.</td></tr>
+            <tr><td class="p-name">topic</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Used as the new title if <code>title</code> is omitted.</td></tr>
+            <tr><td class="p-name">project</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Move to a project by name.</td></tr>
+            <tr><td class="p-name">project_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Move to a project by ID.</td></tr>
+            <tr><td class="p-name">disabled_connections</td><td class="p-meta"><span class="p-type">object[]</span><span class="p-req opt">optional</span></td><td class="p-desc">Connections to exclude from this task's turns.</td></tr>
           </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> -X PATCH <span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/tasks/task_abc123 \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span> \
+  </span>-H <span class="st">"Content-Type: application/json"</span> \
+  -d <span class="st">'{"title":"Renamed task"}'</span></pre>
+          </div>
+<p class="schema-label">Response — Task object</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
+  <span class="hl">"id"</span>:               <span class="st">"task_abc123"</span>,
+  <span class="hl">"title"</span>:            <span class="st">"Renamed task"</span>,
+  <span class="hl">"preview"</span>:          <span class="st">"Renamed task"</span>,
+  <span class="hl">"project"</span>:          <span class="st">"Sales Automation"</span>,
+  <span class="hl">"project_id"</span>:       <span class="st">"proj_xyz"</span>,
+  <span class="hl">"project_path"</span>:     <span class="st">"/Users/you/cowork/sales-automation"</span>,
+  <span class="hl">"harness"</span>:          <span class="st">"anton"</span>,
+  <span class="hl">"model"</span>:            <span class="st">"claude-opus-4-8"</span>,
+  <span class="hl">"reasoning_effort"</span>: <span class="st">null</span>,
+  <span class="hl">"created_at"</span>:       <span class="st">"2026-06-11T10:00:00Z"</span>,
+  <span class="hl">"updated_at"</span>:       <span class="st">"2026-06-11T10:09:41Z"</span>
+}</pre>
+          </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method post">POST</span>
+          <span class="endpoint-path" data-path="/tasks/{id}/move">https://cowork.mindshub.ai/api/v1/tasks/{id}/move</span>
+          <span class="endpoint-desc">Move a task to another project, artifacts included</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Body</p><table class="params-table">
+            <tr><td class="p-name">project</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Destination project by name. One of <code>project</code>/<code>project_id</code> is required, and it must already exist.</td></tr>
+            <tr><td class="p-name">project_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Destination project by ID.</td></tr>
+            <tr><td class="p-name">move_objects</td><td class="p-meta"><span class="p-type">boolean</span><span class="p-req opt">optional</span></td><td class="p-desc">Default <code>true</code>. Also relocates the task's artifacts into the destination project; attached files follow automatically either way.</td></tr>
+          </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> -X POST <span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/tasks/task_abc123/move \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span> \
+  </span>-H <span class="st">"Content-Type: application/json"</span> \
+  -d <span class="st">'{"project_id":"proj_new"}'</span></pre>
+          </div>
+<p class="schema-label">Response — Task object</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
+  <span class="hl">"id"</span>:               <span class="st">"task_abc123"</span>,
+  <span class="hl">"title"</span>:            <span class="st">"Q2 analysis"</span>,
+  <span class="hl">"preview"</span>:          <span class="st">"Q2 analysis"</span>,
+  <span class="hl">"project"</span>:          <span class="st">"Q3 Planning"</span>,
+  <span class="hl">"project_id"</span>:       <span class="st">"proj_new"</span>,
+  <span class="hl">"project_path"</span>:     <span class="st">"/Users/you/cowork/q3-planning"</span>,
+  <span class="hl">"harness"</span>:          <span class="st">"anton"</span>,
+  <span class="hl">"model"</span>:            <span class="st">"claude-opus-4-8"</span>,
+  <span class="hl">"reasoning_effort"</span>: <span class="st">null</span>,
+  <span class="hl">"created_at"</span>:       <span class="st">"2026-06-11T10:00:00Z"</span>,
+  <span class="hl">"updated_at"</span>:       <span class="st">"2026-06-11T10:11:03Z"</span>
+}</pre>
+          </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method get">GET</span>
-          <span class="endpoint-path">/conversations/{id}/items</span>
-          <span class="endpoint-desc">Get messages in a conversation</span>
+          <span class="endpoint-path" data-path="/tasks/{id}/items">https://cowork.mindshub.ai/api/v1/tasks/{id}/items</span>
+          <span class="endpoint-desc">Get messages in a task</span>
         </div>
         <div class="endpoint-body">
-          <p>Returns an ordered array of message items. Each item has <code>role</code> (<code>user</code> or <code>assistant</code>), <code>content</code>, and <code>created_at</code>.</p>
-          <p class="schema-label">Query parameters</p>
-          <table class="params-table">
-            <tr><td class="p-name">limit</td><td class="p-type">integer</td><td class="p-req opt">optional</td><td class="p-desc">Default <code>100</code>.</td></tr>
-            <tr><td class="p-name">before</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Return items before this item ID (cursor pagination).</td></tr>
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p>Returns the full ordered array of message items — no pagination. Each item has <code>id</code>, <code>role</code>, <code>content</code>, <code>created_at</code>, an <code>events</code> array, and <code>harness</code> when the message came from a specific agent harness.</p><p class="schema-label">Path parameters</p><table class="params-table">
+            <tr><td class="p-name">id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Task ID.</td></tr>
           </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/tasks/task_abc123/items"</span><span class="burl-auth-line"> \
+  -H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+<p class="schema-label">Response — array of message items</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>[
+  {
+    <span class="hl">"id"</span>:         <span class="st">"msg_001"</span>,
+    <span class="hl">"role"</span>:       <span class="st">"user"</span>,
+    <span class="hl">"content"</span>:    <span class="st">"Analyse Q2 revenue by region"</span>,
+    <span class="hl">"created_at"</span>: <span class="st">"2026-06-11T10:00:00Z"</span>,
+    <span class="hl">"events"</span>:     []
+  },
+  {
+    <span class="hl">"id"</span>:         <span class="st">"msg_002"</span>,
+    <span class="hl">"role"</span>:       <span class="st">"assistant"</span>,
+    <span class="hl">"content"</span>:    <span class="st">"Here is the Q2 breakdown..."</span>,
+    <span class="hl">"created_at"</span>: <span class="st">"2026-06-11T10:00:41Z"</span>,
+    <span class="hl">"events"</span>:     [<span class="cm">/* streamed thought/tool events */</span>],
+    <span class="hl">"harness"</span>:    <span class="st">"anton"</span>
+  }
+]</pre>
+          </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method delete">DELETE</span>
-          <span class="endpoint-path">/conversations/{id}</span>
-          <span class="endpoint-desc">Delete a conversation and all its messages</span>
+          <span class="endpoint-path" data-path="/tasks/{id}">https://cowork.mindshub.ai/api/v1/tasks/{id}</span>
+          <span class="endpoint-desc">Delete a task and all its messages</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Path parameters</p><table class="params-table">
+            <tr><td class="p-name">id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Task ID.</td></tr>
+          </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> -X DELETE <span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/tasks/task_abc123 \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+<p class="schema-label">Response</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{ <span class="hl">"ok"</span>: <span class="st">true</span> }</pre>
+          </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method delete">DELETE</span>
+          <span class="endpoint-path" data-path="/tasks/{id}/turns/{turn_index}">https://cowork.mindshub.ai/api/v1/tasks/{id}/turns/{turn_index}</span>
+          <span class="endpoint-desc">Delete a turn and everything after it</span>
+        </div>
+        <div class="endpoint-body">
+          <p class="schema-label">Path parameters</p>
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<table class="params-table">
+            <tr><td class="p-name">turn_index</td><td class="p-meta"><span class="p-type">integer</span><span class="p-req req">required</span></td><td class="p-desc">0-based index counting only assistant messages. Also removes that turn's preceding user message, if any.</td></tr>
+          </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> -X DELETE <span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/tasks/task_abc123/turns/2 \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+<p class="schema-label">Response</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{ <span class="hl">"ok"</span>: <span class="st">true</span>, <span class="hl">"deleted"</span>: <span class="st">4</span> }</pre>
+          </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h2 id="responses" style="font-size:16px;font-weight:600;color:var(--ink);border-bottom:1px solid var(--line);margin:40px 0 16px;padding-bottom:10px;">Streaming a task</h2>
+      <p class="section-desc">The <code>/responses</code> endpoints send a message into a task and stream the agent's reply. Compatible with the shape of the OpenAI Responses API. Turns run <strong>detached</strong> from the connection that started them — closing the tab does not stop the run. Reconnect at any time with <code>GET /responses/tail</code> and resume exactly where you left off, or replay the whole turn from the start with <code>from_seq=0</code>. Only an explicit <code>POST /responses/cancel</code> stops the run.</p>
+
+      <p class="schema-label">Non-streaming response</p>
+      <div class="code-block" style="margin-bottom:24px">
+        <div class="code-header"><span class="code-lang">json</span></div>
+        <pre>{
+  <span class="hl">"id"</span>:         <span class="st">"resp_abc123"</span>,
+  <span class="hl">"object"</span>:     <span class="st">"response"</span>,
+  <span class="hl">"status"</span>:     <span class="st">"completed"</span>,   <span class="cm">// "created" | "in_progress" | "completed"</span>
+  <span class="hl">"error"</span>:      <span class="st">null</span>,
+  <span class="hl">"model"</span>:      <span class="st">"claude-opus-4-8"</span>,
+  <span class="hl">"output"</span>: [
+    {
+      <span class="hl">"type"</span>:    <span class="st">"message"</span>,
+      <span class="hl">"id"</span>:      <span class="st">"msg_1"</span>,
+      <span class="hl">"status"</span>:  <span class="st">"completed"</span>,
+      <span class="hl">"role"</span>:    <span class="st">"assistant"</span>,
+      <span class="hl">"content"</span>: [{ <span class="hl">"type"</span>: <span class="st">"output_text"</span>, <span class="hl">"text"</span>: <span class="st">"Here is the summary..."</span> }]
+    }
+  ],
+  <span class="hl">"created_at"</span>: <span class="st">1750000000</span>
+}</pre>
+      </div>
+
+      <p class="schema-label">Streaming (SSE) events</p>
+      <div class="code-block" style="margin-bottom:24px">
+        <div class="code-header"><span class="code-lang">text</span></div>
+        <pre><span class="cm">data:</span> {"<span class="hl">type</span>":"<span class="st">response.created</span>","<span class="hl">sequence_number</span>":0,"<span class="hl">response</span>":{"id":"resp_abc123","status":"created","output":[]}}
+
+<span class="cm">data:</span> {"<span class="hl">type</span>":"<span class="st">response.output_text.delta</span>","<span class="hl">sequence_number</span>":1,"<span class="hl">response</span>":{"item_id":"msg_1","delta":"Here is "}}
+
+<span class="cm">data:</span> {"<span class="hl">type</span>":"<span class="st">response.completed</span>","<span class="hl">sequence_number</span>":2,"<span class="hl">response</span>":{"id":"resp_abc123","status":"completed","output":[<span class="cm">/* full message */</span>]}}</pre>
+      </div>
+
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method post">POST</span>
+          <span class="endpoint-path" data-path="/responses">https://cowork.mindshub.ai/api/v1/responses</span>
+          <span class="endpoint-desc">Send a message and stream the reply</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Body</p><table class="params-table">
+            <tr><td class="p-name">conversation</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Task/conversation ID to append to. Omit to start a new task — pass <code>project</code> or <code>project_id</code> to place it.</td></tr>
+            <tr><td class="p-name">input</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">User message text.</td></tr>
+            <tr><td class="p-name">project</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Project name for a new task, when <code>conversation</code> is omitted.</td></tr>
+            <tr><td class="p-name">project_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Project ID for a new task, when <code>conversation</code> is omitted.</td></tr>
+            <tr><td class="p-name">stream</td><td class="p-meta"><span class="p-type">boolean</span><span class="p-req opt">optional</span></td><td class="p-desc">Default <code>false</code>. Set <code>true</code> to receive the Server-Sent Events shown above; otherwise a single JSON response is returned once the turn completes.</td></tr>
+            <tr><td class="p-name">model</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Override the account's model for this turn only.</td></tr>
+            <tr><td class="p-name">reasoning_effort</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Override the account's reasoning effort for this turn only.</td></tr>
+            <tr><td class="p-name">harness</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Override the account's default harness for this turn only (e.g. <code>anton</code>).</td></tr>
+          </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> -X POST <span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/responses \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span> \
+  </span>-H <span class="st">"Content-Type: application/json"</span> \
+  -d <span class="st">'{"conversation":"conv_xyz","input":"Summarise last week'\''s sales data","stream":true}'</span></pre>
+          </div>
+<p class="schema-label">Response — see "Non-streaming response" / "Streaming (SSE) events" above</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{ <span class="hl">"id"</span>: <span class="st">"resp_abc123"</span>, <span class="hl">"status"</span>: <span class="st">"completed"</span>, <span class="cm">/* ... */</span> }</pre>
+          </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method get">GET</span>
+          <span class="endpoint-path" data-path="/responses/tail">https://cowork.mindshub.ai/api/v1/responses/tail</span>
+          <span class="endpoint-desc">Resume a task's stream</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p>Reconnect to an in-flight (or just-finished) turn: replay from <code>from_seq</code>, then live-tail new output until the turn ends. Pass <code>from_seq=0</code> to replay a task's whole turn from the beginning, or the last sequence number you rendered to resume without re-rendering anything. 404 means no buffer is registered for this task — fall back to <code>GET /tasks/{id}/items</code> for the persisted history.</p><p class="schema-label">Query parameters</p><table class="params-table">
+            <tr><td class="p-name">conversation_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Task/conversation to tail.</td></tr>
+            <tr><td class="p-name">from_seq</td><td class="p-meta"><span class="p-type">integer</span><span class="p-req opt">optional</span></td><td class="p-desc">Default <code>0</code>. Records with <code>seq &gt;= from_seq</code> are replayed, then the connection live-tails.</td></tr>
+          </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/responses/tail?conversation_id=conv_xyz&from_seq=0"</span><span class="burl-auth-line"> \
+  -H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span>   <span class="cm"># from the start</span>
+<span class="hl">curl</span> <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/responses/tail?conversation_id=conv_xyz&from_seq=12"</span><span class="burl-auth-line"> \
+  -H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span>  <span class="cm"># resume from where you left off</span></pre>
+          </div>
+<p class="schema-label">Response — same SSE stream shown above</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">text</span></div>
+            <pre><span class="cm">data:</span> {"type":"response.output_text.delta","sequence_number":12,"response":{"item_id":"msg_1","delta":"...continuing from seq 12..."}}</pre>
+          </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method get">GET</span>
+          <span class="endpoint-path" data-path="/responses/in-flight-list">https://cowork.mindshub.ai/api/v1/responses/in-flight-list</span>
+          <span class="endpoint-desc">List every task with a stream currently running</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p>No query parameters — returns every in-flight task visible to the caller, so a client can resync stream state across tabs or after a reload.</p>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/responses/in-flight-list"</span><span class="burl-auth-line"> \
+  -H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+<p class="schema-label">Response</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
+  <span class="hl">"in_flight"</span>: [
+    { <span class="hl">"conversation_id"</span>: <span class="st">"conv_xyz"</span>, <span class="hl">"turn_id"</span>: <span class="st">4</span>, <span class="hl">"latest_seq"</span>: <span class="st">12</span> }
+  ]
+}</pre>
+          </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method get">GET</span>
+          <span class="endpoint-path" data-path="/responses/in-flight">https://cowork.mindshub.ai/api/v1/responses/in-flight</span>
+          <span class="endpoint-desc">Check whether a specific task has a stream running</span>
+        </div>
+        <div class="endpoint-body">
+          <p class="schema-label">Query parameters</p>
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<table class="params-table">
+            <tr><td class="p-name">conversation_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Task whose active stream to check.</td></tr>
+          </table><p>Returns <code>latest_seq</code> — pass it as <code>from_seq</code> to <code>/responses/tail</code> to resume without re-rendering anything already shown, or <code>0</code> to replay from the start.</p>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/responses/in-flight?conversation_id=conv_xyz"</span><span class="burl-auth-line"> \
+  -H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+<p class="schema-label">Response</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
+  <span class="hl">"in_flight"</span>:  <span class="st">true</span>,
+  <span class="hl">"has_buffer"</span>: <span class="st">true</span>,
+  <span class="hl">"latest_seq"</span>: <span class="st">12</span>,
+  <span class="hl">"turn_id"</span>:    <span class="st">4</span>
+}</pre>
+          </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method post">POST</span>
+          <span class="endpoint-path" data-path="/responses/cancel">https://cowork.mindshub.ai/api/v1/responses/cancel</span>
+          <span class="endpoint-desc">Stop a running task</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Closing the connection does not stop the run — only this does.</p>
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Body</p><table class="params-table">
+            <tr><td class="p-name">conversation_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Task to cancel.</td></tr>
+          </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> -X POST <span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/responses/cancel \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span> \
+  </span>-H <span class="st">"Content-Type: application/json"</span> \
+  -d <span class="st">'{"conversation_id":"conv_xyz"}'</span></pre>
+          </div>
+<p class="schema-label">Response</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{ <span class="hl">"cancelled"</span>: <span class="st">true</span>, <span class="hl">"conversation_id"</span>: <span class="st">"conv_xyz"</span> }</pre>
+          </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -699,12 +994,35 @@
     <!-- Projects -->
     <div class="api-section" id="projects">
       <h2>Projects</h2>
-      <p class="section-desc">Projects are workspaces that group conversations, files, and artifacts.</p>
+      <p class="section-desc">Projects are workspaces that group tasks, files, and artifacts.</p>
 
-      <p class="schema-label">Project object</p>
-      <div class="code-block" style="margin-bottom:24px">
-        <div class="code-header"><span class="code-lang">json</span></div>
-        <pre>{
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method post">POST</span>
+          <span class="endpoint-path" data-path="/projects">https://cowork.mindshub.ai/api/v1/projects</span>
+          <span class="endpoint-desc">Create a project</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Body</p><table class="params-table">
+            <tr><td class="p-name">name</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Display name for the project.</td></tr>
+            <tr><td class="p-name">description</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Short description shown in the UI.</td></tr>
+            <tr><td class="p-name">connector_ids</td><td class="p-meta"><span class="p-type">string[]</span><span class="p-req opt">optional</span></td><td class="p-desc">Data source connections available within this project.</td></tr>
+            <tr><td class="p-name">skill_ids</td><td class="p-meta"><span class="p-type">string[]</span><span class="p-req opt">optional</span></td><td class="p-desc">Global skills to activate for all tasks in this project.</td></tr>
+          </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> -X POST <span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/projects \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span> \
+  </span>-H <span class="st">"Content-Type: application/json"</span> \
+  -d <span class="st">'{"name":"Sales Automation","description":"Weekly reporting flows","connector_ids":["conn_001"]}'</span></pre>
+          </div>
+<p class="schema-label">Response — Project object</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
   <span class="hl">"id"</span>:             <span class="st">"proj_abc123"</span>,
   <span class="hl">"name"</span>:           <span class="st">"Sales Automation"</span>,
   <span class="hl">"description"</span>:    <span class="st">"Weekly reporting flows"</span>,
@@ -713,42 +1031,45 @@
   <span class="hl">"created_at"</span>:     <span class="st">"2026-06-11T10:00:00Z"</span>,
   <span class="hl">"updated_at"</span>:     <span class="st">"2026-06-11T10:00:00Z"</span>
 }</pre>
+          </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method get">GET</span>
-          <span class="endpoint-path">/projects</span>
+          <span class="endpoint-path" data-path="/projects">https://cowork.mindshub.ai/api/v1/projects</span>
           <span class="endpoint-desc">List all projects</span>
         </div>
         <div class="endpoint-body">
-          <p class="schema-label">Query parameters</p>
-          <table class="params-table">
-            <tr><td class="p-name">limit</td><td class="p-type">integer</td><td class="p-req opt">optional</td><td class="p-desc">Default <code>50</code>.</td></tr>
-            <tr><td class="p-name">offset</td><td class="p-type">integer</td><td class="p-req opt">optional</td><td class="p-desc">Default <code>0</code>.</td></tr>
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Query parameters</p><table class="params-table">
+            <tr><td class="p-name">limit</td><td class="p-meta"><span class="p-type">integer</span><span class="p-req opt">optional</span></td><td class="p-desc">Default <code>50</code>.</td></tr>
+            <tr><td class="p-name">offset</td><td class="p-meta"><span class="p-type">integer</span><span class="p-req opt">optional</span></td><td class="p-desc">Default <code>0</code>.</td></tr>
           </table>
-        </div>
-      </div>
-
-      <div class="endpoint">
-        <div class="endpoint-header">
-          <span class="method post">POST</span>
-          <span class="endpoint-path">/projects</span>
-          <span class="endpoint-desc">Create a project</span>
-        </div>
-        <div class="endpoint-body">
-          <p class="schema-label">Body</p>
-          <table class="params-table">
-            <tr><td class="p-name">name</td><td class="p-type">string</td><td class="p-req req">required</td><td class="p-desc">Display name for the project.</td></tr>
-            <tr><td class="p-name">description</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Short description shown in the UI.</td></tr>
-            <tr><td class="p-name">connector_ids</td><td class="p-type">string[]</td><td class="p-req opt">optional</td><td class="p-desc">Data source connections available within this project.</td></tr>
-            <tr><td class="p-name">skill_ids</td><td class="p-type">string[]</td><td class="p-req opt">optional</td><td class="p-desc">Global skills to activate for all conversations in this project.</td></tr>
-          </table>
-          <div class="code-block">
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
             <div class="code-header"><span class="code-lang">curl</span></div>
-            <pre><span class="hl">curl</span> -X POST http://localhost:26866/api/v1/projects \
-  -H <span class="st">"Content-Type: application/json"</span> \
-  -d <span class="st">'{"name":"Sales Automation","description":"Weekly reporting flows","connector_ids":["conn_001"]}'</span></pre>
+            <pre><span class="hl">curl</span> <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/projects"</span><span class="burl-auth-line"> \
+  -H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+<p class="schema-label">Response — Project object</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
+  <span class="hl">"id"</span>:             <span class="st">"proj_abc123"</span>,
+  <span class="hl">"name"</span>:           <span class="st">"Sales Automation"</span>,
+  <span class="hl">"description"</span>:    <span class="st">"Weekly reporting flows"</span>,
+  <span class="hl">"connector_ids"</span>:  [<span class="st">"conn_001"</span>, <span class="st">"conn_002"</span>],
+  <span class="hl">"skill_ids"</span>:      [<span class="st">"skill_abc"</span>],
+  <span class="hl">"created_at"</span>:     <span class="st">"2026-06-11T10:00:00Z"</span>,
+  <span class="hl">"updated_at"</span>:     <span class="st">"2026-06-11T10:00:00Z"</span>
+}</pre>
+          </div>
+            </div>
           </div>
         </div>
       </div>
@@ -756,25 +1077,69 @@
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method patch">PATCH</span>
-          <span class="endpoint-path">/projects/{id}</span>
+          <span class="endpoint-path" data-path="/projects/{id}">https://cowork.mindshub.ai/api/v1/projects/{id}</span>
           <span class="endpoint-desc">Update a project</span>
         </div>
         <div class="endpoint-body">
-          <p class="schema-label">Body</p>
-          <table class="params-table">
-            <tr><td class="p-name">name</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc"></td></tr>
-            <tr><td class="p-name">description</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc"></td></tr>
-            <tr><td class="p-name">connector_ids</td><td class="p-type">string[]</td><td class="p-req opt">optional</td><td class="p-desc">Replaces the current list.</td></tr>
-            <tr><td class="p-name">skill_ids</td><td class="p-type">string[]</td><td class="p-req opt">optional</td><td class="p-desc">Replaces the current list.</td></tr>
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Body</p><table class="params-table">
+            <tr><td class="p-name">name</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc"></td></tr>
+            <tr><td class="p-name">description</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc"></td></tr>
+            <tr><td class="p-name">connector_ids</td><td class="p-meta"><span class="p-type">string[]</span><span class="p-req opt">optional</span></td><td class="p-desc">Replaces the current list.</td></tr>
+            <tr><td class="p-name">skill_ids</td><td class="p-meta"><span class="p-type">string[]</span><span class="p-req opt">optional</span></td><td class="p-desc">Replaces the current list.</td></tr>
           </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> -X PATCH <span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/projects/proj_abc123 \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span> \
+  </span>-H <span class="st">"Content-Type: application/json"</span> \
+  -d <span class="st">'{"description":"Updated weekly reporting flows"}'</span></pre>
+          </div>
+<p class="schema-label">Response — Project object</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
+  <span class="hl">"id"</span>:             <span class="st">"proj_abc123"</span>,
+  <span class="hl">"name"</span>:           <span class="st">"Sales Automation"</span>,
+  <span class="hl">"description"</span>:    <span class="st">"Weekly reporting flows"</span>,
+  <span class="hl">"connector_ids"</span>:  [<span class="st">"conn_001"</span>, <span class="st">"conn_002"</span>],
+  <span class="hl">"skill_ids"</span>:      [<span class="st">"skill_abc"</span>],
+  <span class="hl">"created_at"</span>:     <span class="st">"2026-06-11T10:00:00Z"</span>,
+  <span class="hl">"updated_at"</span>:     <span class="st">"2026-06-11T10:00:00Z"</span>
+}</pre>
+          </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method delete">DELETE</span>
-          <span class="endpoint-path">/projects/{id}</span>
+          <span class="endpoint-path" data-path="/projects/{id}">https://cowork.mindshub.ai/api/v1/projects/{id}</span>
           <span class="endpoint-desc">Delete a project and all its contents</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Path parameters</p><table class="params-table">
+            <tr><td class="p-name">id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Project ID.</td></tr>
+          </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> -X DELETE <span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/projects/proj_abc123 \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+<p class="schema-label">Response</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{ <span class="hl">"ok"</span>: <span class="st">true</span> }</pre>
+          </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -784,10 +1149,30 @@
       <h2>Artifacts</h2>
       <p class="section-desc"><strong>Artifacts are mini apps</strong> — web apps, dashboards, reports, and documents generated by the agent and hosted within a project. Each artifact belongs to a project.</p>
 
-      <p class="schema-label">Artifact object</p>
-      <div class="code-block" style="margin-bottom:24px">
-        <div class="code-header"><span class="code-lang">json</span></div>
-        <pre>{
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method get">GET</span>
+          <span class="endpoint-path" data-path="/artifacts">https://cowork.mindshub.ai/api/v1/artifacts</span>
+          <span class="endpoint-desc">List artifacts</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Query parameters</p><table class="params-table">
+            <tr><td class="p-name">project_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Filter to a project.</td></tr>
+            <tr><td class="p-name">type</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc"><code>app</code>, <code>report</code>, <code>doc</code>, or <code>dashboard</code>.</td></tr>
+            <tr><td class="p-name">limit</td><td class="p-meta"><span class="p-type">integer</span><span class="p-req opt">optional</span></td><td class="p-desc">Default <code>50</code>.</td></tr>
+          </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/artifacts?project_id=proj_xyz"</span><span class="burl-auth-line"> \
+  -H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+<p class="schema-label">Response — Artifact object</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
   <span class="hl">"id"</span>:          <span class="st">"art_abc123"</span>,
   <span class="hl">"project_id"</span>:  <span class="st">"proj_xyz"</span>,
   <span class="hl">"title"</span>:       <span class="st">"Sales Dashboard"</span>,
@@ -796,65 +1181,97 @@
   <span class="hl">"created_at"</span>:  <span class="st">"2026-06-11T10:00:00Z"</span>,
   <span class="hl">"updated_at"</span>:  <span class="st">"2026-06-11T10:00:00Z"</span>
 }</pre>
-      </div>
-
-      <div class="endpoint">
-        <div class="endpoint-header">
-          <span class="method get">GET</span>
-          <span class="endpoint-path">/artifacts</span>
-          <span class="endpoint-desc">List artifacts</span>
-        </div>
-        <div class="endpoint-body">
-          <p class="schema-label">Query parameters</p>
-          <table class="params-table">
-            <tr><td class="p-name">project_id</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Filter to a project.</td></tr>
-            <tr><td class="p-name">type</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc"><code>app</code>, <code>report</code>, <code>doc</code>, or <code>dashboard</code>.</td></tr>
-            <tr><td class="p-name">limit</td><td class="p-type">integer</td><td class="p-req opt">optional</td><td class="p-desc">Default <code>50</code>.</td></tr>
-          </table>
+          </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method get">GET</span>
-          <span class="endpoint-path">/artifacts/preview</span>
+          <span class="endpoint-path" data-path="/artifacts/preview">https://cowork.mindshub.ai/api/v1/artifacts/preview</span>
           <span class="endpoint-desc">Preview an artifact by path</span>
         </div>
         <div class="endpoint-body">
-          <p class="schema-label">Query parameters</p>
-          <table class="params-table">
-            <tr><td class="p-name">path</td><td class="p-type">string</td><td class="p-req req">required</td><td class="p-desc">Relative artifact path, e.g. <code>sales_dashboard/index.html</code>.</td></tr>
-            <tr><td class="p-name">project_id</td><td class="p-type">string</td><td class="p-req req">required</td><td class="p-desc">Project that owns the artifact.</td></tr>
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Query parameters</p><table class="params-table">
+            <tr><td class="p-name">path</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Relative artifact path, e.g. <code>sales_dashboard/index.html</code>.</td></tr>
+            <tr><td class="p-name">project_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Project that owns the artifact.</td></tr>
           </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/artifacts/preview?project_id=proj_xyz&path=sales_dashboard/index.html"</span><span class="burl-auth-line"> \
+  -H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+<p class="schema-label">Response</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">text</span></div>
+            <pre><span class="cm">// The raw artifact content (e.g. text/html), not a JSON envelope.</span></pre>
+          </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method post">POST</span>
-          <span class="endpoint-path">/artifacts/open</span>
+          <span class="endpoint-path" data-path="/artifacts/open">https://cowork.mindshub.ai/api/v1/artifacts/open</span>
           <span class="endpoint-desc">Open an artifact in the desktop shell</span>
         </div>
         <div class="endpoint-body">
-          <p class="schema-label">Body</p>
-          <table class="params-table">
-            <tr><td class="p-name">artifact_id</td><td class="p-type">string</td><td class="p-req req">required</td><td class="p-desc">Artifact to open in the Electron window.</td></tr>
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Body</p><table class="params-table">
+            <tr><td class="p-name">artifact_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Artifact to open in the Electron window.</td></tr>
           </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> -X POST <span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/artifacts/open \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span> \
+  </span>-H <span class="st">"Content-Type: application/json"</span> \
+  -d <span class="st">'{"artifact_id":"art_abc123"}'</span></pre>
+          </div>
+<p class="schema-label">Response</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{ <span class="hl">"opened"</span>: <span class="st">true</span> }</pre>
+          </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method get">GET</span>
-          <span class="endpoint-path">/artifacts/serve/{project_id}/{path}</span>
+          <span class="endpoint-path" data-path="/artifacts/serve/{project_id}/{path}">https://cowork.mindshub.ai/api/v1/artifacts/serve/{project_id}/{path}</span>
           <span class="endpoint-desc">Serve a raw artifact file</span>
         </div>
         <div class="endpoint-body">
-          <p class="schema-label">Path parameters</p>
-          <table class="params-table">
-            <tr><td class="p-name">project_id</td><td class="p-type">string</td><td class="p-req req">required</td><td class="p-desc">Project ID.</td></tr>
-            <tr><td class="p-name">path</td><td class="p-type">string</td><td class="p-req req">required</td><td class="p-desc">File path within the artifact, e.g. <code>index.html</code> or <code>assets/chart.js</code>.</td></tr>
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Path parameters</p><table class="params-table">
+            <tr><td class="p-name">project_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Project ID.</td></tr>
+            <tr><td class="p-name">path</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">File path within the artifact, e.g. <code>index.html</code> or <code>assets/chart.js</code>.</td></tr>
           </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/artifacts/serve/proj_xyz/index.html"</span><span class="burl-auth-line"> \
+  -H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+<p class="schema-label">Response</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">text</span></div>
+            <pre><span class="cm">// The raw file, served with its real Content-Type — not a JSON envelope.</span></pre>
+          </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -862,60 +1279,89 @@
     <!-- Schedules -->
     <div class="api-section" id="schedules">
       <h2>Schedules</h2>
-      <p class="section-desc">Run tasks on a cron schedule. Schedules belong to a project and trigger a conversation or workflow automatically.</p>
+      <p class="section-desc">Run tasks on a cron schedule. Schedules belong to a project and trigger a task or workflow automatically.</p>
 
-      <p class="schema-label">Schedule object</p>
-      <div class="code-block" style="margin-bottom:24px">
-        <div class="code-header"><span class="code-lang">json</span></div>
-        <pre>{
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method get">GET</span>
+          <span class="endpoint-path" data-path="/schedules">https://cowork.mindshub.ai/api/v1/schedules</span>
+          <span class="endpoint-desc">List schedules</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Query parameters</p><table class="params-table">
+            <tr><td class="p-name">project_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Filter to a project.</td></tr>
+            <tr><td class="p-name">status</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc"><code>active</code> or <code>paused</code>.</td></tr>
+          </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/schedules?project_id=proj_xyz"</span><span class="burl-auth-line"> \
+  -H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+<p class="schema-label">Response — Schedule object</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
   <span class="hl">"id"</span>:              <span class="st">"sched_abc123"</span>,
   <span class="hl">"project_id"</span>:      <span class="st">"proj_xyz"</span>,
   <span class="hl">"cron"</span>:            <span class="st">"0 9 * * 1"</span>,       <span class="cm">// standard 5-field cron expression</span>
   <span class="hl">"timezone"</span>:        <span class="st">"America/New_York"</span>,
   <span class="hl">"prompt"</span>:          <span class="st">"Generate weekly sales digest"</span>,
-  <span class="hl">"conversation_id"</span>: <span class="st">null</span>,             <span class="cm">// null = create new conversation each run</span>
+  <span class="hl">"conversation_id"</span>: <span class="st">null</span>,             <span class="cm">// null = create new task each run</span>
   <span class="hl">"status"</span>:          <span class="st">"active"</span>,         <span class="cm">// "active" | "paused"</span>
   <span class="hl">"last_run_at"</span>:     <span class="st">"2026-06-09T09:00:00Z"</span>,
   <span class="hl">"next_run_at"</span>:     <span class="st">"2026-06-16T09:00:00Z"</span>,
   <span class="hl">"created_at"</span>:      <span class="st">"2026-06-01T00:00:00Z"</span>
 }</pre>
-      </div>
-
-      <div class="endpoint">
-        <div class="endpoint-header">
-          <span class="method get">GET</span>
-          <span class="endpoint-path">/schedules</span>
-          <span class="endpoint-desc">List schedules</span>
-        </div>
-        <div class="endpoint-body">
-          <p class="schema-label">Query parameters</p>
-          <table class="params-table">
-            <tr><td class="p-name">project_id</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Filter to a project.</td></tr>
-            <tr><td class="p-name">status</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc"><code>active</code> or <code>paused</code>.</td></tr>
-          </table>
+          </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method post">POST</span>
-          <span class="endpoint-path">/schedules</span>
+          <span class="endpoint-path" data-path="/schedules">https://cowork.mindshub.ai/api/v1/schedules</span>
           <span class="endpoint-desc">Create a schedule</span>
         </div>
         <div class="endpoint-body">
-          <p class="schema-label">Body</p>
-          <table class="params-table">
-            <tr><td class="p-name">project_id</td><td class="p-type">string</td><td class="p-req req">required</td><td class="p-desc">Project this schedule belongs to.</td></tr>
-            <tr><td class="p-name">cron</td><td class="p-type">string</td><td class="p-req req">required</td><td class="p-desc">Standard 5-field cron expression, e.g. <code>"0 9 * * 1"</code> = every Monday at 09:00.</td></tr>
-            <tr><td class="p-name">prompt</td><td class="p-type">string</td><td class="p-req req">required</td><td class="p-desc">Task the agent runs at each scheduled time.</td></tr>
-            <tr><td class="p-name">timezone</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">IANA timezone. Default <code>UTC</code>.</td></tr>
-            <tr><td class="p-name">conversation_id</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Append each run to an existing conversation. If omitted, a new conversation is created per run.</td></tr>
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Body</p><table class="params-table">
+            <tr><td class="p-name">project_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Project this schedule belongs to.</td></tr>
+            <tr><td class="p-name">cron</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Standard 5-field cron expression, e.g. <code>"0 9 * * 1"</code> = every Monday at 09:00.</td></tr>
+            <tr><td class="p-name">prompt</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Task the agent runs at each scheduled time.</td></tr>
+            <tr><td class="p-name">timezone</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">IANA timezone. Default <code>UTC</code>.</td></tr>
+            <tr><td class="p-name">conversation_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Append each run to an existing task. If omitted, a new task is created per run.</td></tr>
           </table>
-          <div class="code-block">
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
             <div class="code-header"><span class="code-lang">curl</span></div>
-            <pre><span class="hl">curl</span> -X POST http://localhost:26866/api/v1/schedules \
-  -H <span class="st">"Content-Type: application/json"</span> \
+            <pre><span class="hl">curl</span> -X POST <span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/schedules \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span> \
+  </span>-H <span class="st">"Content-Type: application/json"</span> \
   -d <span class="st">'{"project_id":"proj_xyz","cron":"0 9 * * 1","prompt":"Generate weekly sales digest","timezone":"America/New_York"}'</span></pre>
+          </div>
+<p class="schema-label">Response — Schedule object</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
+  <span class="hl">"id"</span>:              <span class="st">"sched_abc123"</span>,
+  <span class="hl">"project_id"</span>:      <span class="st">"proj_xyz"</span>,
+  <span class="hl">"cron"</span>:            <span class="st">"0 9 * * 1"</span>,
+  <span class="hl">"timezone"</span>:        <span class="st">"America/New_York"</span>,
+  <span class="hl">"prompt"</span>:          <span class="st">"Generate weekly sales digest"</span>,
+  <span class="hl">"conversation_id"</span>: <span class="st">null</span>,
+  <span class="hl">"status"</span>:          <span class="st">"active"</span>,
+  <span class="hl">"last_run_at"</span>:     <span class="st">"2026-06-09T09:00:00Z"</span>,
+  <span class="hl">"next_run_at"</span>:     <span class="st">"2026-06-16T09:00:00Z"</span>,
+  <span class="hl">"created_at"</span>:      <span class="st">"2026-06-01T00:00:00Z"</span>
+}</pre>
+          </div>
+            </div>
           </div>
         </div>
       </div>
@@ -923,90 +1369,71 @@
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method patch">PATCH</span>
-          <span class="endpoint-path">/schedules/{id}</span>
+          <span class="endpoint-path" data-path="/schedules/{id}">https://cowork.mindshub.ai/api/v1/schedules/{id}</span>
           <span class="endpoint-desc">Update a schedule</span>
         </div>
         <div class="endpoint-body">
-          <p class="schema-label">Body</p>
-          <table class="params-table">
-            <tr><td class="p-name">cron</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">New cron expression.</td></tr>
-            <tr><td class="p-name">prompt</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Updated task prompt.</td></tr>
-            <tr><td class="p-name">timezone</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">New timezone.</td></tr>
-            <tr><td class="p-name">status</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc"><code>active</code> or <code>paused</code>.</td></tr>
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Body</p><table class="params-table">
+            <tr><td class="p-name">cron</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">New cron expression.</td></tr>
+            <tr><td class="p-name">prompt</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Updated task prompt.</td></tr>
+            <tr><td class="p-name">timezone</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">New timezone.</td></tr>
+            <tr><td class="p-name">status</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc"><code>active</code> or <code>paused</code>.</td></tr>
           </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> -X PATCH <span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/schedules/sched_abc123 \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span> \
+  </span>-H <span class="st">"Content-Type: application/json"</span> \
+  -d <span class="st">'{"status":"paused"}'</span></pre>
+          </div>
+<p class="schema-label">Response — Schedule object</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
+  <span class="hl">"id"</span>:              <span class="st">"sched_abc123"</span>,
+  <span class="hl">"project_id"</span>:      <span class="st">"proj_xyz"</span>,
+  <span class="hl">"cron"</span>:            <span class="st">"0 9 * * 1"</span>,
+  <span class="hl">"timezone"</span>:        <span class="st">"America/New_York"</span>,
+  <span class="hl">"prompt"</span>:          <span class="st">"Generate weekly sales digest"</span>,
+  <span class="hl">"conversation_id"</span>: <span class="st">null</span>,
+  <span class="hl">"status"</span>:          <span class="st">"active"</span>,
+  <span class="hl">"last_run_at"</span>:     <span class="st">"2026-06-09T09:00:00Z"</span>,
+  <span class="hl">"next_run_at"</span>:     <span class="st">"2026-06-16T09:00:00Z"</span>,
+  <span class="hl">"created_at"</span>:      <span class="st">"2026-06-01T00:00:00Z"</span>
+}</pre>
+          </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method post">POST</span>
-          <span class="endpoint-path">/schedules/{id}/run</span>
+          <span class="endpoint-path" data-path="/schedules/{id}/run">https://cowork.mindshub.ai/api/v1/schedules/{id}/run</span>
           <span class="endpoint-desc">Trigger a schedule immediately</span>
         </div>
-      </div>
-
-      <div class="endpoint">
-        <div class="endpoint-header">
-          <span class="method delete">DELETE</span>
-          <span class="endpoint-path">/schedules/{id}</span>
-          <span class="endpoint-desc">Delete a schedule</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Files -->
-    <div class="api-section" id="files">
-      <h2>Files</h2>
-      <p class="section-desc">Upload and manage files that the agent can read, search, and reference. Files can be attached to a project or to individual conversations.</p>
-
-      <p class="schema-label">File object</p>
-      <div class="code-block" style="margin-bottom:24px">
-        <div class="code-header"><span class="code-lang">json</span></div>
-        <pre>{
-  <span class="hl">"id"</span>:              <span class="st">"file_abc123"</span>,
-  <span class="hl">"name"</span>:            <span class="st">"Q2-report.pdf"</span>,
-  <span class="hl">"mime_type"</span>:       <span class="st">"application/pdf"</span>,
-  <span class="hl">"size"</span>:            <span class="st">204800</span>,           <span class="cm">// bytes</span>
-  <span class="hl">"project_id"</span>:      <span class="st">"proj_xyz"</span>,       <span class="cm">// null if conversation-scoped only</span>
-  <span class="hl">"conversation_id"</span>: <span class="st">null</span>,             <span class="cm">// null if project-scoped only</span>
-  <span class="hl">"created_at"</span>:      <span class="st">"2026-06-11T10:00:00Z"</span>
-}</pre>
-      </div>
-
-      <div class="endpoint">
-        <div class="endpoint-header">
-          <span class="method get">GET</span>
-          <span class="endpoint-path">/files</span>
-          <span class="endpoint-desc">List files</span>
-        </div>
         <div class="endpoint-body">
-          <p class="schema-label">Query parameters</p>
-          <table class="params-table">
-            <tr><td class="p-name">project_id</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Filter to a project.</td></tr>
-            <tr><td class="p-name">conversation_id</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Filter to a conversation.</td></tr>
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Path parameters</p><table class="params-table">
+            <tr><td class="p-name">id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Schedule ID.</td></tr>
           </table>
-        </div>
-      </div>
-
-      <div class="endpoint">
-        <div class="endpoint-header">
-          <span class="method post">POST</span>
-          <span class="endpoint-path">/files</span>
-          <span class="endpoint-desc">Upload a file</span>
-        </div>
-        <div class="endpoint-body">
-          <p>Multipart <code>form-data</code> upload.</p>
-          <p class="schema-label">Form fields</p>
-          <table class="params-table">
-            <tr><td class="p-name">file</td><td class="p-type">file</td><td class="p-req req">required</td><td class="p-desc">The file binary. Accepted: PDF, DOCX, XLSX, CSV, TXT, PNG, JPG, and more.</td></tr>
-            <tr><td class="p-name">project_id</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Attach to a project.</td></tr>
-            <tr><td class="p-name">conversation_id</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Attach to a conversation. Can be set alongside <code>project_id</code>.</td></tr>
-          </table>
-          <div class="code-block">
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
             <div class="code-header"><span class="code-lang">curl</span></div>
-            <pre><span class="hl">curl</span> -X POST http://localhost:26866/api/v1/files \
-  -F <span class="st">"file=@Q2-report.pdf"</span> \
-  -F <span class="st">"project_id=proj_xyz"</span></pre>
+            <pre><span class="hl">curl</span> -X POST <span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/schedules/sched_abc123/run \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+<p class="schema-label">Response — Task object</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre><span class="cm">// The task created or appended to for this run — same shape as GET /tasks/{id}.</span></pre>
+          </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1014,8 +1441,139 @@
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method delete">DELETE</span>
-          <span class="endpoint-path">/files/{id}</span>
+          <span class="endpoint-path" data-path="/schedules/{id}">https://cowork.mindshub.ai/api/v1/schedules/{id}</span>
+          <span class="endpoint-desc">Delete a schedule</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Path parameters</p><table class="params-table">
+            <tr><td class="p-name">id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Schedule ID.</td></tr>
+          </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> -X DELETE <span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/schedules/sched_abc123 \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+<p class="schema-label">Response</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{ <span class="hl">"ok"</span>: <span class="st">true</span> }</pre>
+          </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Files -->
+    <div class="api-section" id="files">
+      <h2>Files</h2>
+      <p class="section-desc">Upload and manage files that the agent can read, search, and reference. Files can be attached to a project or to individual tasks.</p>
+
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method post">POST</span>
+          <span class="endpoint-path" data-path="/files">https://cowork.mindshub.ai/api/v1/files</span>
+          <span class="endpoint-desc">Upload a file</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p>Multipart <code>form-data</code> upload.</p><p class="schema-label">Form fields</p><table class="params-table">
+            <tr><td class="p-name">file</td><td class="p-meta"><span class="p-type">file</span><span class="p-req req">required</span></td><td class="p-desc">The file binary. Accepted: PDF, DOCX, XLSX, CSV, TXT, PNG, JPG, and more.</td></tr>
+            <tr><td class="p-name">project_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Attach to a project.</td></tr>
+            <tr><td class="p-name">conversation_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Attach to a task. Can be set alongside <code>project_id</code>.</td></tr>
+          </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> -X POST <span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/files \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span> \
+  </span>-F <span class="st">"file=@Q2-report.pdf"</span> \
+  -F <span class="st">"project_id=proj_xyz"</span></pre>
+          </div>
+<p class="schema-label">Response — File object</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
+  <span class="hl">"id"</span>:              <span class="st">"file_abc123"</span>,
+  <span class="hl">"name"</span>:            <span class="st">"Q2-report.pdf"</span>,
+  <span class="hl">"mime_type"</span>:       <span class="st">"application/pdf"</span>,
+  <span class="hl">"size"</span>:            <span class="st">204800</span>,
+  <span class="hl">"project_id"</span>:      <span class="st">"proj_xyz"</span>,
+  <span class="hl">"conversation_id"</span>: <span class="st">null</span>,
+  <span class="hl">"created_at"</span>:      <span class="st">"2026-06-11T10:00:00Z"</span>
+}</pre>
+          </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method get">GET</span>
+          <span class="endpoint-path" data-path="/files">https://cowork.mindshub.ai/api/v1/files</span>
+          <span class="endpoint-desc">List files</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Query parameters</p><table class="params-table">
+            <tr><td class="p-name">project_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Filter to a project.</td></tr>
+            <tr><td class="p-name">conversation_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Filter to a task.</td></tr>
+          </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/files?project_id=proj_xyz"</span><span class="burl-auth-line"> \
+  -H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+<p class="schema-label">Response — File object</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
+  <span class="hl">"id"</span>:              <span class="st">"file_abc123"</span>,
+  <span class="hl">"name"</span>:            <span class="st">"Q2-report.pdf"</span>,
+  <span class="hl">"mime_type"</span>:       <span class="st">"application/pdf"</span>,
+  <span class="hl">"size"</span>:            <span class="st">204800</span>,           <span class="cm">// bytes</span>
+  <span class="hl">"project_id"</span>:      <span class="st">"proj_xyz"</span>,       <span class="cm">// null if task-scoped only</span>
+  <span class="hl">"conversation_id"</span>: <span class="st">null</span>,             <span class="cm">// null if project-scoped only</span>
+  <span class="hl">"created_at"</span>:      <span class="st">"2026-06-11T10:00:00Z"</span>
+}</pre>
+          </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method delete">DELETE</span>
+          <span class="endpoint-path" data-path="/files/{id}">https://cowork.mindshub.ai/api/v1/files/{id}</span>
           <span class="endpoint-desc">Delete a file</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Path parameters</p><table class="params-table">
+            <tr><td class="p-name">id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">File ID.</td></tr>
+          </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> -X DELETE <span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/files/file_abc123 \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+<p class="schema-label">Response</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{ <span class="hl">"ok"</span>: <span class="st">true</span> }</pre>
+          </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1025,10 +1583,22 @@
       <h2>Connectors</h2>
       <p class="section-desc">Integrate external data sources. Connectors exist independently of any project but can be referenced inside any project. They are defined by <strong>specs</strong> (the connector type, e.g. PostgreSQL, Snowflake, Google Sheets) and instantiated as <strong>connections</strong> with encrypted credentials. Credentials are write-only — never returned after creation.</p>
 
-      <p class="schema-label">ConnectorSpec object</p>
-      <div class="code-block" style="margin-bottom:24px">
-        <div class="code-header"><span class="code-lang">json</span></div>
-        <pre>{
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method get">GET</span>
+          <span class="endpoint-path" data-path="/connectors/specs">https://cowork.mindshub.ai/api/v1/connectors/specs</span>
+          <span class="endpoint-desc">List available connector specs</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/connectors/specs"</span><span class="burl-auth-line"> \
+  -H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+          <p class="schema-label">Response — ConnectorSpec object</p>
+          <div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
   <span class="hl">"id"</span>:           <span class="st">"postgres"</span>,
   <span class="hl">"name"</span>:         <span class="st">"PostgreSQL"</span>,
   <span class="hl">"description"</span>:  <span class="st">"Connect to any PostgreSQL-compatible database."</span>,
@@ -1041,31 +1611,6 @@
     { <span class="hl">"key"</span>: <span class="st">"password"</span>, <span class="hl">"label"</span>: <span class="st">"Password"</span>, <span class="hl">"secret"</span>: <span class="st">true</span>  }
   ]
 }</pre>
-      </div>
-
-      <p class="schema-label">Connection object</p>
-      <div class="code-block" style="margin-bottom:24px">
-        <div class="code-header"><span class="code-lang">json</span></div>
-        <pre>{
-  <span class="hl">"id"</span>:         <span class="st">"conn_abc123"</span>,
-  <span class="hl">"spec_id"</span>:    <span class="st">"postgres"</span>,       <span class="cm">// which ConnectorSpec this uses</span>
-  <span class="hl">"name"</span>:       <span class="st">"prod-db"</span>,
-  <span class="hl">"status"</span>:     <span class="st">"connected"</span>,      <span class="cm">// "connected" | "error" | "pending"</span>
-  <span class="hl">"created_at"</span>: <span class="st">"2026-06-11T10:00:00Z"</span>
-  <span class="cm">// credentials are never returned</span>
-}</pre>
-      </div>
-
-      <div class="endpoint">
-        <div class="endpoint-header">
-          <span class="method get">GET</span>
-          <span class="endpoint-path">/connectors/specs</span>
-          <span class="endpoint-desc">List available connector specs</span>
-        </div>
-        <div class="endpoint-body">
-          <div class="code-block">
-            <div class="code-header"><span class="code-lang">curl</span></div>
-            <pre><span class="hl">curl</span> <span class="st">"http://localhost:26866/api/v1/connectors/specs"</span></pre>
           </div>
         </div>
       </div>
@@ -1073,34 +1618,59 @@
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method get">GET</span>
-          <span class="endpoint-path">/connectors/connections</span>
+          <span class="endpoint-path" data-path="/connectors/connections">https://cowork.mindshub.ai/api/v1/connectors/connections</span>
           <span class="endpoint-desc">List active connections</span>
         </div>
         <div class="endpoint-body">
-          <p class="schema-label">Query parameters</p>
-          <table class="params-table">
-            <tr><td class="p-name">spec_id</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Filter by connector type (e.g. <code>postgres</code>).</td></tr>
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Query parameters</p><table class="params-table">
+            <tr><td class="p-name">spec_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Filter by connector type (e.g. <code>postgres</code>).</td></tr>
           </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/connectors/connections"</span><span class="burl-auth-line"> \
+  -H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+<p class="schema-label">Response — Connection object</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
+  <span class="hl">"id"</span>:         <span class="st">"conn_abc123"</span>,
+  <span class="hl">"spec_id"</span>:    <span class="st">"postgres"</span>,       <span class="cm">// which ConnectorSpec this uses</span>
+  <span class="hl">"name"</span>:       <span class="st">"prod-db"</span>,
+  <span class="hl">"status"</span>:     <span class="st">"connected"</span>,      <span class="cm">// "connected" | "error" | "pending"</span>
+  <span class="hl">"created_at"</span>: <span class="st">"2026-06-11T10:00:00Z"</span>
+  <span class="cm">// credentials are never returned</span>
+}</pre>
+          </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method post">POST</span>
-          <span class="endpoint-path">/connectors/connections</span>
+          <span class="endpoint-path" data-path="/connectors/connections">https://cowork.mindshub.ai/api/v1/connectors/connections</span>
           <span class="endpoint-desc">Create a connection</span>
         </div>
         <div class="endpoint-body">
-          <p class="schema-label">Body</p>
-          <table class="params-table">
-            <tr><td class="p-name">spec_id</td><td class="p-type">string</td><td class="p-req req">required</td><td class="p-desc">The connector spec to use (e.g. <code>"postgres"</code>).</td></tr>
-            <tr><td class="p-name">name</td><td class="p-type">string</td><td class="p-req req">required</td><td class="p-desc">Human-readable label for this connection.</td></tr>
-            <tr><td class="p-name">credentials</td><td class="p-type">object</td><td class="p-req req">required</td><td class="p-desc">Key-value map of credential fields defined by the spec. Secret fields are encrypted at rest and never returned.</td></tr>
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Body</p><table class="params-table">
+            <tr><td class="p-name">spec_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">The connector spec to use (e.g. <code>"postgres"</code>).</td></tr>
+            <tr><td class="p-name">name</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Human-readable label for this connection.</td></tr>
+            <tr><td class="p-name">credentials</td><td class="p-meta"><span class="p-type">object</span><span class="p-req req">required</span></td><td class="p-desc">Key-value map of credential fields defined by the spec. Secret fields are encrypted at rest and never returned.</td></tr>
           </table>
-          <div class="code-block">
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
             <div class="code-header"><span class="code-lang">curl</span></div>
-            <pre><span class="hl">curl</span> -X POST <span class="st">"http://localhost:26866/api/v1/connectors/connections"</span> \
-  -H <span class="st">"Content-Type: application/json"</span> \
+            <pre><span class="hl">curl</span> -X POST <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/connectors/connections"</span> \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span> \
+  </span>-H <span class="st">"Content-Type: application/json"</span> \
   -d <span class="st">'{
     "spec_id": "postgres",
     "name": "prod-db",
@@ -1113,29 +1683,74 @@
     }
   }'</span></pre>
           </div>
+<p class="schema-label">Response — Connection object</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
+  <span class="hl">"id"</span>:         <span class="st">"conn_abc123"</span>,
+  <span class="hl">"spec_id"</span>:    <span class="st">"postgres"</span>,
+  <span class="hl">"name"</span>:       <span class="st">"prod-db"</span>,
+  <span class="hl">"status"</span>:     <span class="st">"connected"</span>,
+  <span class="hl">"created_at"</span>: <span class="st">"2026-06-11T10:00:00Z"</span>
+}</pre>
+          </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method delete">DELETE</span>
-          <span class="endpoint-path">/connectors/connections/{id}</span>
+          <span class="endpoint-path" data-path="/connectors/connections/{id}">https://cowork.mindshub.ai/api/v1/connectors/connections/{id}</span>
           <span class="endpoint-desc">Remove a connection</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Path parameters</p><table class="params-table">
+            <tr><td class="p-name">id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Connection ID.</td></tr>
+          </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> -X DELETE <span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/connectors/connections/conn_abc123 \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+<p class="schema-label">Response</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{ <span class="hl">"ok"</span>: <span class="st">true</span> }</pre>
+          </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method get">GET</span>
-          <span class="endpoint-path">/connectors/oauth/{spec}/start</span>
+          <span class="endpoint-path" data-path="/connectors/oauth/{spec}/start">https://cowork.mindshub.ai/api/v1/connectors/oauth/{spec}/start</span>
           <span class="endpoint-desc">Start OAuth 2.0 flow</span>
         </div>
         <div class="endpoint-body">
-          <p>Returns a redirect URL. Send the user's browser there; after authorization the platform receives the callback and stores the token automatically.</p>
-          <p class="schema-label">Path parameter</p>
-          <table class="params-table">
-            <tr><td class="p-name">spec</td><td class="p-type">string</td><td class="p-req req">required</td><td class="p-desc">The connector spec ID (e.g. <code>google-sheets</code>, <code>notion</code>).</td></tr>
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p>Returns a redirect URL. Send the user's browser there; after authorization the platform receives the callback and stores the token automatically.</p><p class="schema-label">Path parameter</p><table class="params-table">
+            <tr><td class="p-name">spec</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">The connector spec ID (e.g. <code>google-sheets</code>, <code>notion</code>).</td></tr>
           </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/connectors/oauth/google-sheets/start"</span><span class="burl-auth-line"> \
+  -H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+<p class="schema-label">Response</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{ <span class="hl">"redirect_url"</span>: <span class="st">"https://accounts.google.com/o/oauth2/v2/auth?..."</span> }</pre>
+          </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1143,12 +1758,32 @@
     <!-- Memories -->
     <div class="api-section" id="memories">
       <h2>Memories</h2>
-      <p class="section-desc">Persistent facts and context the agent retains across conversations. Memories can be <strong>global</strong> (shared across all projects and conversations) or <strong>project-scoped</strong> — omit <code>project_id</code> to create a global memory. The agent automatically surfaces relevant memories as context at the start of each conversation.</p>
+      <p class="section-desc">Persistent facts and context the agent retains across tasks. Memories can be <strong>global</strong> (shared across all projects and tasks) or <strong>project-scoped</strong> — omit <code>project_id</code> to create a global memory. The agent automatically surfaces relevant memories as context at the start of each task.</p>
 
-      <p class="schema-label">Memory object</p>
-      <div class="code-block" style="margin-bottom:24px">
-        <div class="code-header"><span class="code-lang">json</span></div>
-        <pre>{
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method get">GET</span>
+          <span class="endpoint-path" data-path="/memories">https://cowork.mindshub.ai/api/v1/memories</span>
+          <span class="endpoint-desc">List memories</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Query parameters</p><table class="params-table">
+            <tr><td class="p-name">project_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Return memories scoped to this project. Omit to return global memories.</td></tr>
+            <tr><td class="p-name">source</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Filter by who created it: <code>user</code> or <code>agent</code>.</td></tr>
+          </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/memories"</span><span class="burl-auth-line"> \
+  -H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span>               <span class="cm"># global</span>
+<span class="hl">curl</span> <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/memories?project_id=..."</span><span class="burl-auth-line"> \
+  -H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span>  <span class="cm"># project-scoped</span></pre>
+          </div><p class="schema-label">Response — Memory object</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
   <span class="hl">"id"</span>:           <span class="st">"mem_abc123"</span>,
   <span class="hl">"content"</span>:      <span class="st">"Prefers executive summaries under 200 words."</span>,
   <span class="hl">"project_id"</span>:   <span class="st">null</span>,            <span class="cm">// null = global; string = project-scoped</span>
@@ -1156,24 +1791,8 @@
   <span class="hl">"created_at"</span>:   <span class="st">"2026-06-11T10:00:00Z"</span>,
   <span class="hl">"updated_at"</span>:   <span class="st">"2026-06-11T10:00:00Z"</span>
 }</pre>
-      </div>
-
-      <div class="endpoint">
-        <div class="endpoint-header">
-          <span class="method get">GET</span>
-          <span class="endpoint-path">/memories</span>
-          <span class="endpoint-desc">List memories</span>
-        </div>
-        <div class="endpoint-body">
-          <p class="schema-label">Query parameters</p>
-          <table class="params-table">
-            <tr><td class="p-name">project_id</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Return memories scoped to this project. Omit to return global memories.</td></tr>
-            <tr><td class="p-name">source</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Filter by who created it: <code>user</code> or <code>agent</code>.</td></tr>
-          </table>
-          <div class="code-block">
-            <div class="code-header"><span class="code-lang">curl</span></div>
-            <pre><span class="hl">curl</span> <span class="st">"http://localhost:26866/api/v1/memories"</span>               <span class="cm"># global</span>
-<span class="hl">curl</span> <span class="st">"http://localhost:26866/api/v1/memories?project_id=..."</span>  <span class="cm"># project-scoped</span></pre>
+          </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1181,20 +1800,37 @@
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method post">POST</span>
-          <span class="endpoint-path">/memories</span>
+          <span class="endpoint-path" data-path="/memories">https://cowork.mindshub.ai/api/v1/memories</span>
           <span class="endpoint-desc">Create a memory</span>
         </div>
         <div class="endpoint-body">
-          <p class="schema-label">Body</p>
-          <table class="params-table">
-            <tr><td class="p-name">content</td><td class="p-type">string</td><td class="p-req req">required</td><td class="p-desc">The fact or preference to remember. Plain text.</td></tr>
-            <tr><td class="p-name">project_id</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Scope to a project. Omit for a global memory.</td></tr>
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Body</p><table class="params-table">
+            <tr><td class="p-name">content</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">The fact or preference to remember. Plain text.</td></tr>
+            <tr><td class="p-name">project_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Scope to a project. Omit for a global memory.</td></tr>
           </table>
-          <div class="code-block">
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
             <div class="code-header"><span class="code-lang">curl</span></div>
-            <pre><span class="hl">curl</span> -X POST <span class="st">"http://localhost:26866/api/v1/memories"</span> \
-  -H <span class="st">"Content-Type: application/json"</span> \
+            <pre><span class="hl">curl</span> -X POST <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/memories"</span> \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span> \
+  </span>-H <span class="st">"Content-Type: application/json"</span> \
   -d <span class="st">'{"content": "Always use Q3 targets as the baseline.", "project_id": "proj_xyz"}'</span></pre>
+          </div>
+<p class="schema-label">Response — Memory object</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
+  <span class="hl">"id"</span>:           <span class="st">"mem_abc123"</span>,
+  <span class="hl">"content"</span>:      <span class="st">"Always use Q3 targets as the baseline."</span>,
+  <span class="hl">"project_id"</span>:   <span class="st">"proj_xyz"</span>,
+  <span class="hl">"source"</span>:       <span class="st">"user"</span>,
+  <span class="hl">"created_at"</span>:   <span class="st">"2026-06-11T10:00:00Z"</span>,
+  <span class="hl">"updated_at"</span>:   <span class="st">"2026-06-11T10:00:00Z"</span>
+}</pre>
+          </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1202,22 +1838,65 @@
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method patch">PATCH</span>
-          <span class="endpoint-path">/memories/{id}</span>
+          <span class="endpoint-path" data-path="/memories/{id}">https://cowork.mindshub.ai/api/v1/memories/{id}</span>
           <span class="endpoint-desc">Update a memory</span>
         </div>
         <div class="endpoint-body">
-          <p class="schema-label">Body</p>
-          <table class="params-table">
-            <tr><td class="p-name">content</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Updated text for the memory.</td></tr>
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Body</p><table class="params-table">
+            <tr><td class="p-name">content</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Updated text for the memory.</td></tr>
           </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> -X PATCH <span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/memories/mem_abc123 \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span> \
+  </span>-H <span class="st">"Content-Type: application/json"</span> \
+  -d <span class="st">'{"content":"Always use Q4 targets as the baseline."}'</span></pre>
+          </div>
+<p class="schema-label">Response — Memory object</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
+  <span class="hl">"id"</span>:           <span class="st">"mem_abc123"</span>,
+  <span class="hl">"content"</span>:      <span class="st">"Always use Q3 targets as the baseline."</span>,
+  <span class="hl">"project_id"</span>:   <span class="st">"proj_xyz"</span>,
+  <span class="hl">"source"</span>:       <span class="st">"user"</span>,
+  <span class="hl">"created_at"</span>:   <span class="st">"2026-06-11T10:00:00Z"</span>,
+  <span class="hl">"updated_at"</span>:   <span class="st">"2026-06-11T10:00:00Z"</span>
+}</pre>
+          </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method delete">DELETE</span>
-          <span class="endpoint-path">/memories/{id}</span>
+          <span class="endpoint-path" data-path="/memories/{id}">https://cowork.mindshub.ai/api/v1/memories/{id}</span>
           <span class="endpoint-desc">Delete a memory</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Path parameters</p><table class="params-table">
+            <tr><td class="p-name">id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Memory ID.</td></tr>
+          </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> -X DELETE <span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/memories/mem_abc123 \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+<p class="schema-label">Response</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{ <span class="hl">"ok"</span>: <span class="st">true</span> }</pre>
+          </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1226,10 +1905,22 @@
       <h2>Skills</h2>
       <p class="section-desc">Reusable capabilities available globally across all projects — custom instructions, tools, or prompt templates the agent can invoke. Skills extend what the agent knows how to do without re-explaining it each time. Like Connectors, they exist independently of any single project.</p>
 
-      <p class="schema-label">Skill object</p>
-      <div class="code-block" style="margin-bottom:24px">
-        <div class="code-header"><span class="code-lang">json</span></div>
-        <pre>{
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method get">GET</span>
+          <span class="endpoint-path" data-path="/skills">https://cowork.mindshub.ai/api/v1/skills</span>
+          <span class="endpoint-desc">List all skills</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/skills"</span><span class="burl-auth-line"> \
+  -H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+          <p class="schema-label">Response — Skill object</p>
+          <div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
   <span class="hl">"id"</span>:            <span class="st">"skill_abc123"</span>,
   <span class="hl">"name"</span>:          <span class="st">"weekly-report"</span>,
   <span class="hl">"description"</span>:   <span class="st">"Generates a weekly performance report from connected data sources."</span>,
@@ -1241,18 +1932,6 @@
   <span class="hl">"created_at"</span>:    <span class="st">"2026-06-11T10:00:00Z"</span>,
   <span class="hl">"updated_at"</span>:    <span class="st">"2026-06-11T10:00:00Z"</span>
 }</pre>
-      </div>
-
-      <div class="endpoint">
-        <div class="endpoint-header">
-          <span class="method get">GET</span>
-          <span class="endpoint-path">/skills</span>
-          <span class="endpoint-desc">List all skills</span>
-        </div>
-        <div class="endpoint-body">
-          <div class="code-block">
-            <div class="code-header"><span class="code-lang">curl</span></div>
-            <pre><span class="hl">curl</span> <span class="st">"http://localhost:26866/api/v1/skills"</span></pre>
           </div>
         </div>
       </div>
@@ -1260,21 +1939,25 @@
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method post">POST</span>
-          <span class="endpoint-path">/skills</span>
+          <span class="endpoint-path" data-path="/skills">https://cowork.mindshub.ai/api/v1/skills</span>
           <span class="endpoint-desc">Register a skill</span>
         </div>
         <div class="endpoint-body">
-          <p class="schema-label">Body</p>
-          <table class="params-table">
-            <tr><td class="p-name">name</td><td class="p-type">string</td><td class="p-req req">required</td><td class="p-desc">Kebab-case identifier. Used to invoke the skill from a conversation.</td></tr>
-            <tr><td class="p-name">description</td><td class="p-type">string</td><td class="p-req req">required</td><td class="p-desc">Short summary of what this skill does. Shown in the UI and used by the agent to decide whether to invoke it.</td></tr>
-            <tr><td class="p-name">instructions</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Detailed prompt injected whenever this skill is active. Explains how to carry out the task, preferred format, constraints, etc.</td></tr>
-            <tr><td class="p-name">tools</td><td class="p-type">string[]</td><td class="p-req opt">optional</td><td class="p-desc">List of tool identifiers the agent may call when running this skill (e.g. <code>"sql_query"</code>, <code>"send_email"</code>).</td></tr>
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Body</p><table class="params-table">
+            <tr><td class="p-name">name</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Kebab-case identifier. Used to invoke the skill from a task.</td></tr>
+            <tr><td class="p-name">description</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Short summary of what this skill does. Shown in the UI and used by the agent to decide whether to invoke it.</td></tr>
+            <tr><td class="p-name">instructions</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Detailed prompt injected whenever this skill is active. Explains how to carry out the task, preferred format, constraints, etc.</td></tr>
+            <tr><td class="p-name">tools</td><td class="p-meta"><span class="p-type">string[]</span><span class="p-req opt">optional</span></td><td class="p-desc">List of tool identifiers the agent may call when running this skill (e.g. <code>"sql_query"</code>, <code>"send_email"</code>).</td></tr>
           </table>
-          <div class="code-block">
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
             <div class="code-header"><span class="code-lang">curl</span></div>
-            <pre><span class="hl">curl</span> -X POST <span class="st">"http://localhost:26866/api/v1/skills"</span> \
-  -H <span class="st">"Content-Type: application/json"</span> \
+            <pre><span class="hl">curl</span> -X POST <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/skills"</span> \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span> \
+  </span>-H <span class="st">"Content-Type: application/json"</span> \
   -d <span class="st">'{
     "name": "weekly-report",
     "description": "Generates a weekly performance report.",
@@ -1282,43 +1965,177 @@
     "tools": ["sql_query", "send_email"]
   }'</span></pre>
           </div>
+<p class="schema-label">Response — Skill object</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
+  <span class="hl">"id"</span>:            <span class="st">"skill_abc123"</span>,
+  <span class="hl">"name"</span>:          <span class="st">"weekly-report"</span>,
+  <span class="hl">"description"</span>:   <span class="st">"Generates a weekly performance report."</span>,
+  <span class="hl">"instructions"</span>:  <span class="st">"Always start with an executive summary. Limit to 3 charts."</span>,
+  <span class="hl">"tools"</span>: [
+    <span class="st">"sql_query"</span>,
+    <span class="st">"send_email"</span>
+  ],
+  <span class="hl">"created_at"</span>:    <span class="st">"2026-06-11T10:00:00Z"</span>,
+  <span class="hl">"updated_at"</span>:    <span class="st">"2026-06-11T10:00:00Z"</span>
+}</pre>
+          </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method patch">PATCH</span>
-          <span class="endpoint-path">/skills/{id}</span>
+          <span class="endpoint-path" data-path="/skills/{id}">https://cowork.mindshub.ai/api/v1/skills/{id}</span>
           <span class="endpoint-desc">Update a skill</span>
         </div>
         <div class="endpoint-body">
-          <p class="schema-label">Body</p>
-          <table class="params-table">
-            <tr><td class="p-name">name</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">New identifier.</td></tr>
-            <tr><td class="p-name">description</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Updated summary.</td></tr>
-            <tr><td class="p-name">instructions</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Revised prompt instructions.</td></tr>
-            <tr><td class="p-name">tools</td><td class="p-type">string[]</td><td class="p-req opt">optional</td><td class="p-desc">Replace the full list of allowed tools.</td></tr>
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Body</p><table class="params-table">
+            <tr><td class="p-name">name</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">New identifier.</td></tr>
+            <tr><td class="p-name">description</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Updated summary.</td></tr>
+            <tr><td class="p-name">instructions</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Revised prompt instructions.</td></tr>
+            <tr><td class="p-name">tools</td><td class="p-meta"><span class="p-type">string[]</span><span class="p-req opt">optional</span></td><td class="p-desc">Replace the full list of allowed tools.</td></tr>
           </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> -X PATCH <span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/skills/skill_abc123 \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span> \
+  </span>-H <span class="st">"Content-Type: application/json"</span> \
+  -d <span class="st">'{"description":"Generates a weekly performance report, now with YoY deltas."}'</span></pre>
+          </div>
+<p class="schema-label">Response — Skill object</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
+  <span class="hl">"id"</span>:            <span class="st">"skill_abc123"</span>,
+  <span class="hl">"name"</span>:          <span class="st">"weekly-report"</span>,
+  <span class="hl">"description"</span>:   <span class="st">"Generates a weekly performance report."</span>,
+  <span class="hl">"instructions"</span>:  <span class="st">"Always start with an executive summary. Limit to 3 charts."</span>,
+  <span class="hl">"tools"</span>: [
+    <span class="st">"sql_query"</span>,
+    <span class="st">"send_email"</span>
+  ],
+  <span class="hl">"created_at"</span>:    <span class="st">"2026-06-11T10:00:00Z"</span>,
+  <span class="hl">"updated_at"</span>:    <span class="st">"2026-06-11T10:00:00Z"</span>
+}</pre>
+          </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method delete">DELETE</span>
-          <span class="endpoint-path">/skills/{id}</span>
+          <span class="endpoint-path" data-path="/skills/{id}">https://cowork.mindshub.ai/api/v1/skills/{id}</span>
           <span class="endpoint-desc">Delete a skill</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Path parameters</p><table class="params-table">
+            <tr><td class="p-name">id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Skill ID.</td></tr>
+          </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> -X DELETE <span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/skills/skill_abc123 \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+<p class="schema-label">Response</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{ <span class="hl">"ok"</span>: <span class="st">true</span> }</pre>
+          </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="api-section" id="scratchpads">
       <h2>Scratchpads</h2>
-      <p class="section-desc">Notebook-style workspaces scoped to a conversation. A scratchpad is made up of ordered <strong>cells</strong> — the agent writes to cells as it reasons, drafts, and executes code. Each cell has a type (<code>markdown</code>, <code>code</code>, or <code>output</code>) and tracks its own execution state. Scratchpads persist for the lifetime of the conversation and can be promoted to an Artifact.</p>
+      <p class="section-desc">Notebook-style workspaces scoped to a task. A scratchpad is made up of ordered <strong>cells</strong> — the agent writes to cells as it reasons, drafts, and executes code. Each cell has a type (<code>markdown</code>, <code>code</code>, or <code>output</code>) and tracks its own execution state. Scratchpads persist for the lifetime of the task and can be promoted to an Artifact.</p>
 
-      <h2 style="font-size:14px;font-weight:600;color:var(--ink-3);border:none;margin:0 0 16px;padding:0;letter-spacing:0.04em;">Scratchpad object</h2>
-      <div class="code-block" style="margin-bottom:32px">
-        <div class="code-header"><span class="code-lang">json</span></div>
-        <pre>{
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method get">GET</span>
+          <span class="endpoint-path" data-path="/scratchpads">https://cowork.mindshub.ai/api/v1/scratchpads</span>
+          <span class="endpoint-desc">List scratchpads for a task</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/scratchpads?conversation_id=..."</span><span class="burl-auth-line"> \
+  -H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+          <p class="schema-label">Response — Scratchpad object</p>
+          <div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{ <span class="hl">"scratchpads"</span>: [ {
+  <span class="hl">"id"</span>:              <span class="st">"sp_abc123"</span>,
+  <span class="hl">"conversation_id"</span>: <span class="st">"conv_xyz"</span>,
+  <span class="hl">"title"</span>:           <span class="st">"Sales analysis draft"</span>,
+  <span class="hl">"cells"</span>:           [],
+  <span class="hl">"saved"</span>:           <span class="st">false</span>,
+  <span class="hl">"created_at"</span>:      <span class="st">"2026-06-11T10:00:00Z"</span>,
+  <span class="hl">"updated_at"</span>:      <span class="st">"2026-06-11T10:04:12Z"</span>
+} ] }</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method post">POST</span>
+          <span class="endpoint-path" data-path="/scratchpads">https://cowork.mindshub.ai/api/v1/scratchpads</span>
+          <span class="endpoint-desc">Create a scratchpad</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> -X POST <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/scratchpads"</span> \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span> \
+  </span>-H <span class="st">"Content-Type: application/json"</span> \
+  -d <span class="st">'{"conversation_id":"...","title":"Sales analysis draft","cells":[]}'</span></pre>
+          </div>
+          <p class="schema-label">Response — Scratchpad object</p>
+          <div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
+  <span class="hl">"id"</span>:              <span class="st">"sp_abc123"</span>,
+  <span class="hl">"conversation_id"</span>: <span class="st">"conv_xyz"</span>,
+  <span class="hl">"title"</span>:           <span class="st">"Sales analysis draft"</span>,
+  <span class="hl">"cells"</span>:           [],
+  <span class="hl">"saved"</span>:           <span class="st">false</span>,
+  <span class="hl">"created_at"</span>:      <span class="st">"2026-06-11T10:00:00Z"</span>,
+  <span class="hl">"updated_at"</span>:      <span class="st">"2026-06-11T10:04:12Z"</span>
+}</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method get">GET</span>
+          <span class="endpoint-path" data-path="/scratchpads/{scratchpad_id}">https://cowork.mindshub.ai/api/v1/scratchpads/{scratchpad_id}</span>
+          <span class="endpoint-desc">Get a scratchpad with all cells</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="code-block" style="margin-bottom:24px">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/scratchpads/sp_abc123"</span><span class="burl-auth-line"> \
+  -H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+          <p class="schema-label">Response — Scratchpad object</p>
+          <div class="code-block" style="margin-bottom:24px">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
   <span class="hl">"id"</span>:              <span class="st">"sp_abc123"</span>,
   <span class="hl">"conversation_id"</span>: <span class="st">"conv_xyz"</span>,
   <span class="hl">"title"</span>:           <span class="st">"Sales analysis draft"</span>,
@@ -1327,12 +2144,12 @@
   <span class="hl">"created_at"</span>:      <span class="st">"2026-06-11T10:00:00Z"</span>,
   <span class="hl">"updated_at"</span>:      <span class="st">"2026-06-11T10:04:12Z"</span>
 }</pre>
-      </div>
+          </div>
 
-      <h2 style="font-size:14px;font-weight:600;color:var(--ink-3);border:none;margin:0 0 16px;padding:0;letter-spacing:0.04em;">Cell object</h2>
-      <div class="code-block" style="margin-bottom:8px">
-        <div class="code-header"><span class="code-lang">json</span></div>
-        <pre>{
+          <p class="schema-label">Cell object</p>
+          <div class="code-block" style="margin-bottom:8px">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
   <span class="hl">"id"</span>:        <span class="st">"cell_001"</span>,
   <span class="hl">"type"</span>:      <span class="st">"code"</span>,          <span class="cm">// "markdown" | "code" | "output"</span>
   <span class="hl">"content"</span>:   <span class="st">"df.describe()"</span>,
@@ -1351,63 +2168,41 @@
   <span class="hl">"error"</span>:     <span class="st">null</span>,            <span class="cm">// error message when status = "error"</span>
   <span class="hl">"index"</span>:     <span class="st">0</span>                 <span class="cm">// display order within the scratchpad</span>
 }</pre>
-      </div>
-      <p class="section-desc" style="margin-bottom:32px;font-size:12.5px">
-        <strong>type</strong> — <code>markdown</code> cells are prose written by the agent; <code>code</code> cells are executable snippets; <code>output</code> cells are the results attached to the preceding code cell (stdout, images, tables).<br>
-        <strong>status</strong> — only relevant on <code>code</code> cells. <code>pending</code> means queued, <code>running</code> means currently executing, <code>success</code>/<code>error</code> are terminal states.<br>
-        <strong>outputs</strong> — multi-modal: a single code cell can produce several output objects with different MIME types (plain text, HTML, PNG charts, JSON).
-      </p>
-
-      <div class="endpoint">
-        <div class="endpoint-header">
-          <span class="method get">GET</span>
-          <span class="endpoint-path">/scratchpads</span>
-          <span class="endpoint-desc">List scratchpads for a conversation</span>
-        </div>
-        <div class="endpoint-body">
-          <div class="code-block">
-            <div class="code-header"><span class="code-lang">curl</span></div>
-            <pre><span class="hl">curl</span> <span class="st">"http://localhost:26866/api/v1/scratchpads?conversation_id=..."</span></pre>
           </div>
-        </div>
-      </div>
-
-      <div class="endpoint">
-        <div class="endpoint-header">
-          <span class="method post">POST</span>
-          <span class="endpoint-path">/scratchpads</span>
-          <span class="endpoint-desc">Create a scratchpad</span>
-        </div>
-        <div class="endpoint-body">
-          <div class="code-block">
-            <div class="code-header"><span class="code-lang">curl</span></div>
-            <pre><span class="hl">curl</span> -X POST <span class="st">"http://localhost:26866/api/v1/scratchpads"</span> \
-  -H <span class="st">"Content-Type: application/json"</span> \
-  -d <span class="st">'{"conversation_id":"...","title":"Sales analysis draft","cells":[]}'</span></pre>
-          </div>
-        </div>
-      </div>
-
-      <div class="endpoint">
-        <div class="endpoint-header">
-          <span class="method get">GET</span>
-          <span class="endpoint-path">/scratchpads/{scratchpad_id}</span>
-          <span class="endpoint-desc">Get a scratchpad with all cells</span>
+          <p style="font-size:12.5px;color:var(--ink-3)">
+            <strong>type</strong> — <code>markdown</code> cells are prose written by the agent; <code>code</code> cells are executable snippets; <code>output</code> cells are the results attached to the preceding code cell (stdout, images, tables).<br>
+            <strong>status</strong> — only relevant on <code>code</code> cells. <code>pending</code> means queued, <code>running</code> means currently executing, <code>success</code>/<code>error</code> are terminal states.<br>
+            <strong>outputs</strong> — multi-modal: a single code cell can produce several output objects with different MIME types (plain text, HTML, PNG charts, JSON).
+          </p>
         </div>
       </div>
 
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method patch">PATCH</span>
-          <span class="endpoint-path">/scratchpads/{scratchpad_id}</span>
+          <span class="endpoint-path" data-path="/scratchpads/{scratchpad_id}">https://cowork.mindshub.ai/api/v1/scratchpads/{scratchpad_id}</span>
           <span class="endpoint-desc">Update title or save state</span>
         </div>
         <div class="endpoint-body">
           <div class="code-block">
             <div class="code-header"><span class="code-lang">curl</span></div>
-            <pre><span class="hl">curl</span> -X PATCH <span class="st">"http://localhost:26866/api/v1/scratchpads/{scratchpad_id}"</span> \
-  -H <span class="st">"Content-Type: application/json"</span> \
+            <pre><span class="hl">curl</span> -X PATCH <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/scratchpads/{scratchpad_id}"</span> \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span> \
+  </span>-H <span class="st">"Content-Type: application/json"</span> \
   -d <span class="st">'{"title":"Final analysis","saved":true}'</span></pre>
+          </div>
+          <p class="schema-label">Response — Scratchpad object</p>
+          <div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
+  <span class="hl">"id"</span>:              <span class="st">"sp_abc123"</span>,
+  <span class="hl">"conversation_id"</span>: <span class="st">"conv_xyz"</span>,
+  <span class="hl">"title"</span>:           <span class="st">"Final analysis"</span>,
+  <span class="hl">"cells"</span>:           [],
+  <span class="hl">"saved"</span>:           <span class="st">true</span>,
+  <span class="hl">"created_at"</span>:      <span class="st">"2026-06-11T10:00:00Z"</span>,
+  <span class="hl">"updated_at"</span>:      <span class="st">"2026-06-11T10:09:00Z"</span>
+}</pre>
           </div>
         </div>
       </div>
@@ -1415,8 +2210,28 @@
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method delete">DELETE</span>
-          <span class="endpoint-path">/scratchpads/{scratchpad_id}</span>
+          <span class="endpoint-path" data-path="/scratchpads/{scratchpad_id}">https://cowork.mindshub.ai/api/v1/scratchpads/{scratchpad_id}</span>
           <span class="endpoint-desc">Delete a scratchpad and all its cells</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Path parameters</p><table class="params-table">
+            <tr><td class="p-name">scratchpad_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Scratchpad ID.</td></tr>
+          </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> -X DELETE <span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/scratchpads/sp_abc123 \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+<p class="schema-label">Response</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{ <span class="hl">"ok"</span>: <span class="st">true</span> }</pre>
+          </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1426,15 +2241,30 @@
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method post">POST</span>
-          <span class="endpoint-path">/scratchpads/{scratchpad_id}/cells</span>
+          <span class="endpoint-path" data-path="/scratchpads/{scratchpad_id}/cells">https://cowork.mindshub.ai/api/v1/scratchpads/{scratchpad_id}/cells</span>
           <span class="endpoint-desc">Append a cell</span>
         </div>
         <div class="endpoint-body">
           <div class="code-block">
             <div class="code-header"><span class="code-lang">curl</span></div>
-            <pre><span class="hl">curl</span> -X POST <span class="st">"http://localhost:26866/api/v1/scratchpads/{scratchpad_id}/cells"</span> \
-  -H <span class="st">"Content-Type: application/json"</span> \
+            <pre><span class="hl">curl</span> -X POST <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/scratchpads/{scratchpad_id}/cells"</span> \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span> \
+  </span>-H <span class="st">"Content-Type: application/json"</span> \
   -d <span class="st">'{"type":"code","language":"python","content":"df.head()"}'</span></pre>
+          </div>
+          <p class="schema-label">Response — Cell object</p>
+          <div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
+  <span class="hl">"id"</span>:        <span class="st">"cell_002"</span>,
+  <span class="hl">"type"</span>:      <span class="st">"code"</span>,
+  <span class="hl">"content"</span>:   <span class="st">"df.head()"</span>,
+  <span class="hl">"language"</span>:  <span class="st">"python"</span>,
+  <span class="hl">"status"</span>:    <span class="st">"pending"</span>,
+  <span class="hl">"outputs"</span>:   [],
+  <span class="hl">"error"</span>:     <span class="st">null</span>,
+  <span class="hl">"index"</span>:     <span class="st">1</span>
+}</pre>
           </div>
         </div>
       </div>
@@ -1442,15 +2272,30 @@
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method patch">PATCH</span>
-          <span class="endpoint-path">/scratchpads/{scratchpad_id}/cells/{cell_id}</span>
+          <span class="endpoint-path" data-path="/scratchpads/{scratchpad_id}/cells/{cell_id}">https://cowork.mindshub.ai/api/v1/scratchpads/{scratchpad_id}/cells/{cell_id}</span>
           <span class="endpoint-desc">Edit a cell's content or index</span>
         </div>
         <div class="endpoint-body">
           <div class="code-block">
             <div class="code-header"><span class="code-lang">curl</span></div>
-            <pre><span class="hl">curl</span> -X PATCH <span class="st">"http://localhost:26866/api/v1/scratchpads/{scratchpad_id}/cells/{cell_id}"</span> \
-  -H <span class="st">"Content-Type: application/json"</span> \
+            <pre><span class="hl">curl</span> -X PATCH <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/scratchpads/{scratchpad_id}/cells/{cell_id}"</span> \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span> \
+  </span>-H <span class="st">"Content-Type: application/json"</span> \
   -d <span class="st">'{"content":"df.tail(10)","index":2}'</span></pre>
+          </div>
+          <p class="schema-label">Response — Cell object</p>
+          <div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{
+  <span class="hl">"id"</span>:        <span class="st">"cell_002"</span>,
+  <span class="hl">"type"</span>:      <span class="st">"code"</span>,
+  <span class="hl">"content"</span>:   <span class="st">"df.tail(10)"</span>,
+  <span class="hl">"language"</span>:  <span class="st">"python"</span>,
+  <span class="hl">"status"</span>:    <span class="st">"pending"</span>,
+  <span class="hl">"outputs"</span>:   [],
+  <span class="hl">"error"</span>:     <span class="st">null</span>,
+  <span class="hl">"index"</span>:     <span class="st">2</span>
+}</pre>
           </div>
         </div>
       </div>
@@ -1458,14 +2303,27 @@
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method post">POST</span>
-          <span class="endpoint-path">/scratchpads/{scratchpad_id}/cells/{cell_id}/run</span>
+          <span class="endpoint-path" data-path="/scratchpads/{scratchpad_id}/cells/{cell_id}/run">https://cowork.mindshub.ai/api/v1/scratchpads/{scratchpad_id}/cells/{cell_id}/run</span>
           <span class="endpoint-desc">Execute a code cell</span>
         </div>
         <div class="endpoint-body">
-          <p>Runs the cell and streams output back as server-sent events. Each event carries a partial output object. Terminal event has <code>status: "success"</code> or <code>status: "error"</code>.</p>
-          <div class="code-block">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p>Runs the cell and streams output back as server-sent events. Each event carries a partial output object. Terminal event has <code>status: "success"</code> or <code>status: "error"</code>.</p>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
             <div class="code-header"><span class="code-lang">curl</span></div>
-            <pre><span class="hl">curl</span> -X POST <span class="st">"http://localhost:26866/api/v1/scratchpads/{scratchpad_id}/cells/{cell_id}/run"</span></pre>
+            <pre><span class="hl">curl</span> -X POST <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/scratchpads/{scratchpad_id}/cells/{cell_id}/run"</span><span class="burl-auth-line"> \
+  -H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+<p class="schema-label">Response (SSE)</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">text</span></div>
+            <pre><span class="cm">data:</span> {"status":"running","outputs":[]}
+
+<span class="cm">data:</span> {"status":"success","outputs":[{"mime":"text/plain","data":"count    12.0\nmean     4.2\n..."}]}</pre>
+          </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1473,50 +2331,59 @@
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method delete">DELETE</span>
-          <span class="endpoint-path">/scratchpads/{scratchpad_id}/cells/{cell_id}</span>
+          <span class="endpoint-path" data-path="/scratchpads/{scratchpad_id}/cells/{cell_id}">https://cowork.mindshub.ai/api/v1/scratchpads/{scratchpad_id}/cells/{cell_id}</span>
           <span class="endpoint-desc">Delete a cell</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Path parameters</p><table class="params-table">
+            <tr><td class="p-name">scratchpad_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Scratchpad ID.</td></tr>
+            <tr><td class="p-name">cell_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">Cell ID.</td></tr>
+          </table>
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
+            <div class="code-header"><span class="code-lang">curl</span></div>
+            <pre><span class="hl">curl</span> -X DELETE <span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/scratchpads/sp_abc123/cells/cell_002 \
+  <span class="burl-auth-line">-H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div>
+<p class="schema-label">Response</p><div class="code-block" style="margin-bottom:0">
+            <div class="code-header"><span class="code-lang">json</span></div>
+            <pre>{ <span class="hl">"ok"</span>: <span class="st">true</span> }</pre>
+          </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="api-section" id="search">
       <h2>Search</h2>
-      <p class="section-desc">Full-text and semantic search across conversations, artifacts, files, and memories. Returns ranked results with the matching resource type and a short excerpt.</p>
-
-      <p class="schema-label">SearchResult object</p>
-      <div class="code-block" style="margin-bottom:24px">
-        <div class="code-header"><span class="code-lang">json</span></div>
-        <pre>{
-  <span class="hl">"type"</span>:       <span class="st">"conversation"</span>,   <span class="cm">// "conversation" | "artifact" | "file" | "memory"</span>
-  <span class="hl">"id"</span>:         <span class="st">"conv_abc123"</span>,
-  <span class="hl">"title"</span>:      <span class="st">"Sales forecast Q3"</span>,
-  <span class="hl">"excerpt"</span>:    <span class="st">"...the Q3 sales forecast shows a 12% increase over..."</span>,
-  <span class="hl">"score"</span>:      <span class="st">0.93</span>,             <span class="cm">// relevance score 0–1</span>
-  <span class="hl">"project_id"</span>: <span class="st">"proj_xyz"</span>        <span class="cm">// null for global results</span>
-}</pre>
-      </div>
+      <p class="section-desc">Full-text and semantic search across tasks, artifacts, files, and memories. Returns ranked results with the matching resource type and a short excerpt.</p>
 
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method get">GET</span>
-          <span class="endpoint-path">/search</span>
+          <span class="endpoint-path" data-path="/search">https://cowork.mindshub.ai/api/v1/search</span>
           <span class="endpoint-desc">Search across the workspace</span>
         </div>
         <div class="endpoint-body">
-          <p class="schema-label">Query parameters</p>
-          <table class="params-table">
-            <tr><td class="p-name">q</td><td class="p-type">string</td><td class="p-req req">required</td><td class="p-desc">The search query. Supports natural language and keyword matching.</td></tr>
-            <tr><td class="p-name">project_id</td><td class="p-type">string</td><td class="p-req opt">optional</td><td class="p-desc">Limit results to a single project.</td></tr>
-            <tr><td class="p-name">types</td><td class="p-type">string[]</td><td class="p-req opt">optional</td><td class="p-desc">Comma-separated list of resource types to include: <code>conversation</code>, <code>artifact</code>, <code>file</code>, <code>memory</code>. Defaults to all.</td></tr>
-            <tr><td class="p-name">limit</td><td class="p-type">integer</td><td class="p-req opt">optional</td><td class="p-desc">Maximum results to return. Defaults to <code>20</code>, max <code>100</code>.</td></tr>
+          <div class="endpoint-cols">
+            <div class="endpoint-params">
+<p class="schema-label">Query parameters</p><table class="params-table">
+            <tr><td class="p-name">q</td><td class="p-meta"><span class="p-type">string</span><span class="p-req req">required</span></td><td class="p-desc">The search query. Supports natural language and keyword matching.</td></tr>
+            <tr><td class="p-name">project_id</td><td class="p-meta"><span class="p-type">string</span><span class="p-req opt">optional</span></td><td class="p-desc">Limit results to a single project.</td></tr>
+            <tr><td class="p-name">types</td><td class="p-meta"><span class="p-type">string[]</span><span class="p-req opt">optional</span></td><td class="p-desc">Comma-separated list of resource types to include: <code>conversation</code>, <code>artifact</code>, <code>file</code>, <code>memory</code>. Defaults to all.</td></tr>
+            <tr><td class="p-name">limit</td><td class="p-meta"><span class="p-type">integer</span><span class="p-req opt">optional</span></td><td class="p-desc">Maximum results to return. Defaults to <code>20</code>, max <code>100</code>.</td></tr>
           </table>
-          <div class="code-block">
+            </div>
+            <div class="endpoint-example">
+<div class="code-block">
             <div class="code-header"><span class="code-lang">curl</span></div>
-            <pre><span class="hl">curl</span> <span class="st">"http://localhost:26866/api/v1/search?q=sales+forecast&project_id=proj_xyz&types=conversation,file&limit=10"</span></pre>
-          </div>
-
-          <p class="schema-label">Response</p>
-          <div class="code-block">
+            <pre><span class="hl">curl</span> <span class="st">"<span class="burl-base">https://cowork.mindshub.ai/api/v1</span>/search?q=sales+forecast&project_id=proj_xyz&types=conversation,file&limit=10"</span><span class="burl-auth-line"> \
+  -H <span class="st">"Authorization: Bearer YOUR_API_KEY"</span></span></pre>
+          </div><p class="schema-label">Response — SearchResult objects</p><div class="code-block" style="margin-bottom:0">
             <div class="code-header"><span class="code-lang">json</span></div>
             <pre>{
   <span class="hl">"results"</span>: [
@@ -1531,6 +2398,8 @@
   ],
   <span class="hl">"total"</span>: 1
 }</pre>
+          </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1573,6 +2442,61 @@
 
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
+
+  // Base URL toggle — swaps every curl example and endpoint-path badge on
+  // the page between the local server and MindsHub's hosted instance.
+  (function() {
+    var LOCAL = 'http://localhost:26866/api/v1';
+    var HOSTED = 'https://cowork.mindshub.ai/api/v1';
+    var buttons = document.querySelectorAll('.burl-opt');
+    var targets = document.querySelectorAll('.burl-base');
+    var paths = document.querySelectorAll('.endpoint-path');
+    var keyButton = document.querySelector('.burl-key');
+    var authLines = document.querySelectorAll('.burl-auth-line');
+
+    function setBase(which) {
+      var val = which === 'hosted' ? HOSTED : LOCAL;
+      targets.forEach(function(el) { el.textContent = val; });
+      paths.forEach(function(el) { el.textContent = val + el.dataset.path; });
+      buttons.forEach(function(b) { b.classList.toggle('active', b.dataset.base === which); });
+      if (keyButton) keyButton.hidden = which !== 'hosted';
+      authLines.forEach(function(el) { el.hidden = which !== 'hosted'; });
+      try { localStorage.setItem('cowork-docs-base', which); } catch (e) {}
+    }
+
+    buttons.forEach(function(b) {
+      b.addEventListener('click', function() { setBase(b.dataset.base); });
+    });
+
+    var saved = null;
+    try { saved = localStorage.getItem('cowork-docs-base'); } catch (e) {}
+    if (saved === 'local') setBase('local');
+  })();
+
+  // Copy buttons — every code block gets one.
+  (function() {
+    document.querySelectorAll('.code-block .code-header').forEach(function(header) {
+      if (header.querySelector('.copy-btn')) return;
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'copy-btn';
+      btn.textContent = 'Copy';
+      header.appendChild(btn);
+    });
+
+    document.addEventListener('click', function(e) {
+      var btn = e.target.closest('.copy-btn');
+      if (!btn) return;
+      var block = btn.closest('.code-block');
+      var pre = block && block.querySelector('pre');
+      if (!pre) return;
+      navigator.clipboard.writeText(pre.innerText).then(function() {
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+      });
+    });
+  })();
 </script>
 </body>
 </html>

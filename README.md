@@ -112,13 +112,15 @@ cp dev.env.example dev.env      # then set REF=feat/my-thing (or per-module API_
 | `make pack-local` | build the macOS `.app` from local uncommitted source (no push needed) |
 | `make refs` | show which refs the next run will use |
 | `make baseline` | reset submodules to the pinned commits |
-| `make pin` | record the current submodule commits as the superproject's pins (one deliberate commit) |
+| `make pin` | record the current submodule commits as the superproject’s pins (one deliberate commit) |
 
 Submodules are configured with `ignore = all`, so your branch work never shows up as superproject changes — the parent `git status` stays clean. Pins move **only** via `make pin`. See [`CLAUDE.md`](CLAUDE.md) for the full workflow.
 
 ## Deploy anywhere
 
 MindsHub is built for flexible deployment — **cloud, VPC, on-prem, air-gapped, and hybrid** infrastructure — so you keep full control over your infrastructure, models, permissions, and data.
+
+- [RepoCloud](https://repocloud.io/details/mindshub/): one-click cloud deployment with competitive pricing.
 
 ## Help & support
 
@@ -144,6 +146,6 @@ Found a security vulnerability? Please **don't** open a public issue. Report it 
 
 ## 📄 License
 
-This repository is released under the [MIT License](LICENSE). Bundled components are governed by their own licenses — see each submodule's repository for details.
+This repository is released under the [MIT License](LICENSE). Bundled components are governed by their own licenses — see each submodule’s repository for details.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

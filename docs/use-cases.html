@@ -199,6 +199,11 @@
   }
   .uc-title { font-size: 15px; font-weight: 600; color: var(--ink); line-height: 1.35; }
   .uc-desc { font-size: 13px; color: var(--ink-3); line-height: 1.55; flex: 1; }
+  .uc-link {
+    font-size: 12.5px; font-weight: 500;
+    display: flex; align-items: center; gap: 5px;
+    margin-top: 4px;
+  }
   .uc-flow {
     font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-4);
     margin-top: 4px;
@@ -220,6 +225,7 @@
   .everyone .persona-icon { background: rgba(251,191,36,0.12); }
   .everyone .uc-tag { background: rgba(251,191,36,0.10); color: var(--tint-3); }
   .everyone .uc-card:hover { border-color: rgba(251,191,36,0.25); }
+  .everyone .uc-link { color: var(--tint-3); }
 
   /* ── CTA ── */
   .cta-wrap {
@@ -425,6 +431,12 @@
         <span class="uc-tag">Create</span>
         <div class="uc-title">Build internal AI tools</div>
         <div class="uc-desc">Describe what your team needs. The agent builds it — a web app, a form, a dashboard — and deploys it, no engineering required.</div>
+      </div>
+      <div class="uc-card">
+        <span class="uc-tag">Connect</span>
+        <div class="uc-title">Work with your apps and data</div>
+        <div class="uc-desc">Connect the tools you already use, like your CRM, docs, and databases. Ask questions about your data in plain language and get answers and reports built from it.</div>
+        <a href="hubspot.html" class="uc-link">Explore use case with HubSpot →</a>
       </div>
     </div>
   </div>
